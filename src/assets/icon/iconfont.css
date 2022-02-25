@@ -1,0 +1,38 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3168116 */
+  src: url('iconfont.eot?t=1644294767584'); /* IE9 */
+  src: url('iconfont.eot?t=1644294767584#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('iconfont.woff2?t=1644294767584') format('woff2'),
+       url('iconfont.woff?t=1644294767584') format('woff'),
+       url('iconfont.ttf?t=1644294767584') format('truetype'),
+       url('iconfont.svg?t=1644294767584#iconfont') format('svg');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-server-user-detail:before {
+  content: "\e62c";
+}
+
+.el-icon-server-email:before {
+  content: "\e641";
+}
+
+.el-icon-server-user-manage:before {
+  content: "\e656";
+}
+
+.el-icon-server-bind:before {
+  content: "\e65c";
+}
+
+.el-icon-server-license:before {
+  content: "\e666";
+}
+
