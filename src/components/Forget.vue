@@ -102,7 +102,6 @@ export default {
         rePassword: "",
         key: "",
         captcha: "",
-        cid: "",
       },
       forgetRules: {
         email: [
@@ -163,7 +162,7 @@ export default {
             this.$router.push({name: "login"});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha(this.forgetForm);
+            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
@@ -185,7 +184,7 @@ export default {
     }
   },
   mounted() {
-    this.flushCaptcha(this.forgetForm);
+    this.flushCaptcha();
   },
   beforeDestroy() {
     clearInterval(this.timer);

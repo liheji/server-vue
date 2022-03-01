@@ -63,7 +63,6 @@ export default {
         password: "",
         captcha: "",
         remember: false,
-        cid: "",
       },
       loginRules: {
         username: [
@@ -102,7 +101,7 @@ export default {
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha(this.loginForm);
+            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
@@ -134,7 +133,7 @@ export default {
   },
   mounted() {
     //数据渲染完以后加载验证码
-    this.flushCaptcha(this.loginForm);
+    this.flushCaptcha();
   }
 }
 </script>

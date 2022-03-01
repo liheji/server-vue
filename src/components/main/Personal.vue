@@ -46,7 +46,7 @@
       <el-descriptions-item label="最后更新时间">{{ $bus.user.updateTime | formatDate }}</el-descriptions-item>
       <el-descriptions-item label="加入时间">{{ $bus.user.createTime | formatDate }}</el-descriptions-item>
     </el-descriptions>
-    <el-button type="primary" size="small" @click="flushCaptcha(pwdForm);pwdVisible=!pwdVisible">修改密码</el-button>
+    <el-button type="primary" size="small" @click="flushCaptcha();pwdVisible=!pwdVisible">修改密码</el-button>
 
     <el-dialog
         title="绑定邮箱"
@@ -183,8 +183,7 @@ export default {
         password: "",
         newPassword: "",
         reNewPassword: "",
-        captcha: "",
-        cid: ""
+        captcha: ""
       },
       pwdRules: {
         password: [
@@ -271,7 +270,7 @@ export default {
             this.pwdVisible = false;
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha(this.pwdForm);
+            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {

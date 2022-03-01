@@ -2,23 +2,23 @@
 import VueRouter from "vue-router"
 import {routeHandler} from "@/util"
 //引入组件
-import Login from "../components/Login"
-import Forget from "../components/Forget"
-import Register from "../components/Register"
+import Login from "@/components/Login"
+import Forget from "@/components/Forget"
+import Register from "@/components/Register"
 
-import Error404 from "../components/Error404"
-import Error500 from "../components/Error500"
+import Error404 from "@/components/Error404"
+import Error500 from "@/components/Error500"
 
-import Main from "../components/Main"
-import Token from "../components/main/Token"
-import Upload from "../components/main/Upload"
-import Format from "../components/main/Format"
-import Device from "../components/main/Device"
-import Socket from "../components/main/Socket"
-import Server from "../components/main/Server"
-import Download from "../components/main/Download"
-import Personal from "../components/main/Personal"
-import Account from "../components/main/Account"
+import Main from "@/components/Main"
+import Token from "@/components/main/Token"
+import Upload from "@/components/main/Upload"
+import Format from "@/components/main/Format"
+import Device from "@/components/main/Device"
+import Socket from "@/components/main/Socket"
+import Server from "@/components/main/Server"
+import Download from "@/components/main/Download"
+import Personal from "@/components/main/Personal"
+import Account from "@/components/main/Account"
 
 //创建并暴露一个路由器
 const router = new VueRouter({

@@ -98,7 +98,6 @@ export default {
         rePassword: "",
         licence: "",
         captcha: "",
-        cid: "",
       },
       registerRules: {
         username: [
@@ -138,7 +137,7 @@ export default {
             this.$router.push({name: "login"});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha(this.registerForm);
+            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
@@ -150,7 +149,7 @@ export default {
   },
   mounted() {
     //数据渲染完以后加载验证码
-    this.flushCaptcha(this.registerForm);
+    this.flushCaptcha();
   }
 }
 </script>

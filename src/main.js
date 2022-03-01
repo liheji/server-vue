@@ -108,18 +108,17 @@ function initGlobal(that) {
         });
     };
 
-    Vue.prototype.flushCaptcha = (curForm) => {
+    Vue.prototype.flushCaptcha = () => {
         that.$axios.get("/before/imageCaptcha")
             .then(({data}) => {
                 const img = new Image();
                 img.src = data.data;
                 img.onload = () => {
-                    curForm.cid = data.cid;
                     const canvas = document.getElementById("verifyCanvas");
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0, 100, 38);
                     canvas.onclick = () => {
-                        that.flushCaptcha(curForm);
+                        that.flushCaptcha();
                     }
                 }
             }).catch((ignored) => {
