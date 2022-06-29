@@ -37,7 +37,7 @@
                   placeholder="授权码"
                   autocomplete="on"
                   maxlength="32">
-          <i class="iconfont el-icon-server-license el-input__icon" slot="prefix"></i>
+          <i class="el-icon-server-license el-input__icon iconfont" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha">

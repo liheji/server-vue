@@ -60,7 +60,7 @@
                     placeholder="邮箱"
                     :readonly="exitEmail"
                     autocomplete="on">
-            <i class="iconfont el-icon-server-email el-input__icon" slot="prefix"></i>
+            <i class="el-icon-server-email el-input__icon iconfont" slot="prefix"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="key">
@@ -322,9 +322,12 @@ export default {
         params: formData
       }).then(({data}) => {
         if (data.code === 0) {
+          this.emailForm.key = '';
           this.emailForm.email = '';
           this.$bus.user.email = formData.email;
           this.emailVisible = false;
+          clearInterval(this.timer);
+          this.timing = 0;
         } else {
           this.$warning(data.msg);
         }

@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "el-search-table-pagination": "^0.4.34",
     "element-ui": "2.15.6",
+    "js-cookie": "^3.0.1",
     "vue": "^2.6.11",
     "vue-context-menu": "^2.0.6",
     "vue-router": "^3.5.3"

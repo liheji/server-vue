@@ -18,6 +18,7 @@ import router from "./router";
 
 //第三方包
 import axios from "axios"
+import cookie from "js-cookie"
 
 //工具包（自定义）
 import {dateFormat, QS} from "@/util"
@@ -73,6 +74,7 @@ new Vue({
 function initGlobal(that) {
     //安装全局事件，需要一个空的Vue组件传递消息而不要需要组件加载数据
     Vue.prototype.$bus = that;
+    Vue.prototype.cookie = cookie;
 
     //查询源URL
     Vue.prototype.$token = QS("token").trim();
@@ -132,7 +134,6 @@ function initAxios(that) {
     //*****************************测试开启*****************************
     // that.$axios.defaults.baseURL = "http://localhost:8080";
     //*****************************测试开启*****************************
-
     //请求拦截器
     that.$axios.interceptors.request.use((config) => {
         //添加params请求参数
@@ -141,6 +142,8 @@ function initAxios(that) {
             ps.token = that.$token;
             config.params = ps;
         }
+
+        config.headers['X-XSRF-TOKEN'] = that.cookie.get("XSRF-TOKEN") || "";
 
         return config;
     }, (error) => {

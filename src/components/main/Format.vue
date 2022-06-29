@@ -8,12 +8,14 @@
         :data="formatData"
         accept="text/html, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         with-credentials>
-      <el-button size="medium" type="primary" alt="上传课程表excel或html文件">点击上传</el-button>
+      <el-button slot="trigger" size="medium" type="primary" title="上传课程表excel或html文件">点击上传</el-button>
       <div style="display:inline;margin-left: 20px; padding:10px 0;">
         <img width="35" height="35" style="margin-bottom: -14px;"
-             src="http://pp.myapp.com/ma_icon/0/icon_52528981_1626526229/256"/>
-        <el-link style="margin-bottom: -1px;margin-left: 2px;" alt="点击查看应用详情"
-                 href="https://www.coolapk.com/apk/com.suda.yzune.wakeupschedule" target="_blank">
+             src="https://pp.myapp.com/ma_icon/0/icon_52528981_1626526229/256"/>
+        <el-link target="_blank"
+                 title="点击查看应用详情"
+                 style="margin-bottom: -1px;margin-left: 2px;"
+                 href="https://www.coolapk.com/apk/com.suda.yzune.wakeupschedule">
           WakeUp课程表
         </el-link>
       </div>

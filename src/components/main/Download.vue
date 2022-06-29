@@ -10,12 +10,10 @@
         page-size-key="limit"
         list-field="data.data"
         total-field="data.total"
-
         url="/fileAttr"
         :columns="fileColumns"
         :page-sizes="[10, 20, 50]"
         :form-options="fileFormOptions"
-
         @selection-change="handleSelectionChange">
 
       <template>

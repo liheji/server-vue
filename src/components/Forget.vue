@@ -10,7 +10,7 @@
                   v-model="forgetForm.email"
                   placeholder="邮箱"
                   autocomplete="on">
-          <i class="iconfont el-icon-server-email el-input__icon" slot="prefix"></i>
+          <i class="el-icon-server-email el-input__icon iconfont" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="key">

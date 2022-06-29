@@ -42,8 +42,8 @@
         </el-menu-item>
         <el-submenu index="2">
           <template slot="title">更多功能</template>
-          <el-menu-item index="/main/personal"><i class="iconfont el-icon-server-user-detail"></i>个人信息</el-menu-item>
-          <el-menu-item index="/main/account"><i class="iconfont el-icon-server-user-manage"></i>用户管理</el-menu-item>
+          <el-menu-item index="/main/personal"><i class="el-icon-server-user-detail iconfont"></i>个人信息</el-menu-item>
+          <el-menu-item index="/main/account"><i class="el-icon-server-user-manage iconfont"></i>用户管理</el-menu-item>
           <el-menu-item index="/main/upload"><i class="el-icon-upload2"></i>上传文件</el-menu-item>
           <el-menu-item index="/main/download"><i class="el-icon-download"></i>下载管理</el-menu-item>
           <el-menu-item index="/main/token"><i class="el-icon-tickets"></i>Token管理</el-menu-item>
@@ -160,7 +160,7 @@ export default {
   },
   beforeCreate() {
     //数据加载之前加载地区文件
-    this.$axios.get("/data/element.json").then(resp => {
+    this.$axios.get("/static/data/element.json").then(resp => {
       this.options = resp.data;
     }).catch((ignored) => {
     });

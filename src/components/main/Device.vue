@@ -19,15 +19,16 @@
               <el-tag size="small" v-if="item.isCurrent" style="margin-left: 10px;">当前设备</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="设备类型">{{ typeName(item.type) }}</el-descriptions-item>
+            <el-descriptions-item label="IP地址">{{ item.ip }}</el-descriptions-item>
             <el-descriptions-item label="操作系统">{{ item.operateSystem }}</el-descriptions-item>
             <el-descriptions-item label="浏览器">{{ item.browser }}</el-descriptions-item>
             <el-descriptions-item label="最后登录">{{ item.lastUsed | formatDate }}</el-descriptions-item>
           </el-descriptions>
           <el-button type="danger" size="small" style="margin-top:10px;margin-right: 10px;"
                      @click="deviceQuit(item)"
-                     v-if="item.isValid"
-                     :loading="loading && current.id === item.id">
-            &nbsp;&nbsp;注销设备&nbsp;&nbsp;
+                     :disabled="!item.isValid"
+                     :loading="loading && current.id === item.id"
+                     v-html="buttonText(item.isValid)">
           </el-button>
         </el-card>
       </el-col>
@@ -65,6 +66,13 @@ export default {
     }
   },
   methods: {
+    buttonText(isValid) {
+      var orgText = "&nbsp;&nbsp;注销设备&nbsp;&nbsp;";
+      if (!isValid) {
+        orgText = "&nbsp;&nbsp;设备已注销&nbsp;&nbsp;";
+      }
+      return orgText
+    },
     typeIcon(value) {
       return deviceType[value].icon;
     },
