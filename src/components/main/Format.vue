@@ -1,11 +1,12 @@
 <template>
-  <div class="format-wrap">
+  <div class="format-wrap" v-if="hasAuthority('use_format')">
     <el-upload
         action="/format"
         :on-success="handleFormatSuccess"
         :before-upload="beforeFormatUpload"
         :before-remove="beforeFormatRemove"
         :data="formatData"
+        :headers="formatHeaders"
         accept="text/html, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         with-credentials>
       <el-button slot="trigger" size="medium" type="primary" title="上传课程表excel或html文件">点击上传</el-button>
@@ -31,7 +32,10 @@ export default {
     return {
       formatTips: "未选择文件",
       formatData: {
-        token: this.token
+        token: this.$store.state.passToken
+      },
+      formatHeaders: {
+        'X-XSRF-TOKEN': this.$cookie.get("XSRF-TOKEN") || ""
       }
     };
   },
@@ -58,7 +62,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.token) {
+    if (!this.$store.state.passToken) {
       delete this.formatData.token;
     }
   }

@@ -15,13 +15,16 @@ import "@/assets/icon/iconfont.css"
 //VueRouter插件
 import VueRouter from "vue-router";
 import router from "./router";
+// Vuex
+import store from './store'
 
 //第三方包
+import QS from "qs"
 import axios from "axios"
 import cookie from "js-cookie"
 
 //工具包（自定义）
-import {dateFormat, QS} from "@/util"
+import {dateFormat, queryLocationSearch} from "@/util"
 
 //解决当前位置的冗余导航
 const originalPush = VueRouter.prototype.push;
@@ -42,12 +45,7 @@ new Vue({
     el: "#app",
     render: h => h(App),
     router: router,
-    data() {
-        return {
-            user: {},
-            isLogin: false
-        }
-    },
+    store: store,
     beforeCreate() {
         //封装全局事件
         initGlobal(this);
@@ -60,8 +58,8 @@ new Vue({
         this.$axios.get("/status")
             .then(({data}) => {
                 if (data.code === 0) {
-                    this.isLogin = true;
-                    this.user = JSON.parse(window.atob(data.data));
+                    this.$store.commit("setIsLogin", true);
+                    this.$store.commit("setUser", JSON.parse(window.atob(data.data)));
                     if (this.$route.meta.withoutAuth) {
                         this.$router.push({name: "personal"});
                     }
@@ -74,10 +72,11 @@ new Vue({
 function initGlobal(that) {
     //安装全局事件，需要一个空的Vue组件传递消息而不要需要组件加载数据
     Vue.prototype.$bus = that;
-    Vue.prototype.cookie = cookie;
 
-    //查询源URL
-    Vue.prototype.$token = QS("token").trim();
+    Vue.prototype.$cookie = cookie;
+
+    //查询源URL是否包含 token
+    store.commit("setPassToken", queryLocationSearch("token").trim())
 
     //全局过滤器
     Vue.filter('formatDate', function (strTime) {
@@ -110,6 +109,10 @@ function initGlobal(that) {
         });
     };
 
+    Vue.prototype.hasAuthority = (authority) => {
+        return that.$store.state.permissions.has(authority) || that.$store.state.user.isSuperuser;
+    };
+
     Vue.prototype.flushCaptcha = () => {
         that.$axios.get("/before/imageCaptcha")
             .then(({data}) => {
@@ -132,18 +135,24 @@ function initAxios(that) {
     that.$axios.defaults.withCredentials = true;
 
     //*****************************测试开启*****************************
+    // window.vx = that;
     // that.$axios.defaults.baseURL = "http://localhost:8080";
     //*****************************测试开启*****************************
+    const secureMethod = new Set(["DELETE", "POST", "PUT"]);
     //请求拦截器
     that.$axios.interceptors.request.use((config) => {
-        //添加params请求参数
-        if (that.$token) {
-            const ps = config.params ? config.params : {};
-            ps.token = that.$token;
+        //添加params的Query参数
+        if (that.$store.state.passToken) {
+            const ps = config.params || {};
+            ps.token = that.$store.state.passToken;
             config.params = ps;
         }
 
-        config.headers['X-XSRF-TOKEN'] = that.cookie.get("XSRF-TOKEN") || "";
+        if (secureMethod.has(config.method.toUpperCase())) {
+            config.data = QS.stringify(config.data || {}, {arrayFormat: 'repeat'})
+            config.headers['X-XSRF-TOKEN'] = cookie.get("XSRF-TOKEN") || "";
+            config.headers['Content-Type'] = "application/x-www-form-urlencoded"
+        }
 
         return config;
     }, (error) => {
@@ -179,7 +188,7 @@ function initRouter(that) {
             next();
         } else {
             //权限控制（通过session和token判断）
-            if (that.isLogin || that.$token) {
+            if (that.$store.state.isLogin || that.$store.state.passToken) {
                 next();
             } else {
                 //将跳转的路由path作为参数，登录成功后跳转到该路由

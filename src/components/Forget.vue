@@ -2,12 +2,12 @@
   <div class="forget-wrap">
     <el-form ref="forgetForm"
              class="forget-form"
-             :rules="forgetRules"
-             :model="forgetForm">
+             :rules="forgetForm.rules"
+             :model="forgetForm.formData">
       <div class="forget-face"><img src="@/assets/img/logo.png" alt="logo"></div>
       <el-form-item prop="email">
         <el-input type="text"
-                  v-model="forgetForm.email"
+                  v-model="forgetForm.formData.email"
                   placeholder="邮箱"
                   autocomplete="on">
           <i class="el-icon-server-email el-input__icon iconfont" slot="prefix"></i>
@@ -16,7 +16,7 @@
       <el-form-item prop="key">
         <el-input type="text"
                   maxlength="6"
-                  v-model="forgetForm.key"
+                  v-model="forgetForm.formData.key"
                   placeholder="校验码" autocomplete="on">
           <el-button slot="append"
                      style="width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password"
-                  v-model="forgetForm.password"
+                  v-model="forgetForm.formData.password"
                   placeholder="密码"
                   autocomplete="on"
                   maxlength="18">
@@ -38,7 +38,7 @@
       </el-form-item>
       <el-form-item prop="rePassword">
         <el-input type="password"
-                  v-model="forgetForm.rePassword"
+                  v-model="forgetForm.formData.rePassword"
                   placeholder="确认密码"
                   autocomplete="on"
                   maxlength="18">
@@ -48,7 +48,7 @@
       <el-form-item prop="captcha" class="captcha">
         <el-input type="text"
                   maxlength="4"
-                  v-model="forgetForm.captcha"
+                  v-model="forgetForm.formData.captcha"
                   placeholder="验证码" autocomplete="on"
                   @keyup.enter.native="submitForm">
           <template slot="append">
@@ -71,9 +71,9 @@ export default {
   data: function () {
     const validateUname = (rule, value, callback) => {
       this.$sync({
-        url: "/before/usernameCheck",
+        url: "/before/uniqueCheck",
         method: "get",
-        params: {username: value}
+        params: {param: value}
       }).then(({data}) => {
         if (data && data.result) {
           callback();
@@ -86,7 +86,7 @@ export default {
     };
 
     const validateRePwd = (rule, value, callback) => {
-      if (this.forgetForm.password !== this.forgetForm.rePassword) {
+      if (this.forgetForm.formData.password !== this.forgetForm.formData.rePassword) {
         callback(new Error('密码不一致'));
       } else {
         callback();
@@ -94,36 +94,38 @@ export default {
     };
 
     return {
-      loading: false,
       timing: 0,
+      loading: false,
       forgetForm: {
-        email: "",
-        password: "",
-        rePassword: "",
-        key: "",
-        captcha: "",
-      },
-      forgetRules: {
-        email: [
-          {required: true, message: "请输入邮箱", trigger: "blur"},
-          {type: 'email', message: "邮箱格式错误", trigger: "blur"},
-          {validator: validateUname, trigger: "blur"}
-        ],
-        key: [
-          {required: true, message: "请输入校验码", trigger: "blur"},
-          {min: 6, max: 6, message: "长度应为6", trigger: "change"}
-        ],
-        password: [
-          {required: true, message: "请输入密码", trigger: "blur"}
-        ],
-        rePassword: [
-          {required: true, message: "请输入确认密码", trigger: "blur"},
-          {validator: validateRePwd, trigger: "blur"}
-        ],
-        captcha: [
-          {required: true, message: "请输入验证码", trigger: "blur"},
-          {min: 4, max: 4, message: "长度应为四", trigger: "change"}
-        ],
+        formData: {
+          email: "",
+          password: "",
+          rePassword: "",
+          key: "",
+          captcha: "",
+        },
+        rules: {
+          email: [
+            {required: true, message: "请输入邮箱", trigger: "blur"},
+            {type: 'email', message: "邮箱格式错误", trigger: "blur"},
+            {validator: validateUname, trigger: "blur"}
+          ],
+          key: [
+            {required: true, message: "请输入校验码", trigger: "blur"},
+            {min: 6, max: 6, message: "长度应为6", trigger: "change"}
+          ],
+          password: [
+            {required: true, message: "请输入密码", trigger: "blur"}
+          ],
+          rePassword: [
+            {required: true, message: "请输入确认密码", trigger: "blur"},
+            {validator: validateRePwd, trigger: "blur"}
+          ],
+          captcha: [
+            {required: true, message: "请输入验证码", trigger: "blur"},
+            {min: 4, max: 4, message: "长度应为四", trigger: "change"}
+          ]
+        }
       }
     }
   },
@@ -136,7 +138,7 @@ export default {
         this.timing = 60;
         this.startTimer();
         this.$axios.get("/before/emailCaptcha", {
-          params: {receiver: this.forgetForm.email}
+          params: {receiver: this.forgetForm.formData.email}
         }).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
@@ -154,9 +156,7 @@ export default {
           return false;
         }
         this.loading = true;
-        this.$axios.post("/before/forget", {}, {
-          params: this.forgetForm
-        }).then(({data}) => {
+        this.$axios.post("/before/forget", this.forgetForm.formData).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
             this.$router.push({name: "login"});

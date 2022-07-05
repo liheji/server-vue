@@ -1,5 +1,5 @@
 <template>
-  <div class="token-wrap">
+  <div class="token-wrap" v-if="hasAuthority('view_pass_token')">
     <el-search-table-pagination
         stripe
         border
@@ -12,14 +12,15 @@
         total-field="data.total"
         url="/passToken"
 
-        :columns="tokenColumns"
+        :columns="tokenTable.columns"
         :page-sizes="[10, 20, 50]"
-        :form-options="tokenFormOptions"
+        :form-options="tokenTable.options"
 
         @selection-change="handleSelectionChange">
 
       <template>
         <el-popconfirm
+            v-if="hasAuthority('delete_pass_token')"
             style="margin: 5px;"
             title="确认删除选中的Token吗？"
             @confirm="handleTokenDeleteSelect">
@@ -27,10 +28,11 @@
               size="mini"
               type="danger"
               slot="reference"
-              :disabled="tokenSelection.length <= 0">删除选中
+              :disabled="tokenTable.selection.length <= 0">删除选中
           </el-button>
         </el-popconfirm>
         <el-popconfirm
+            v-if="hasAuthority('change_pass_token')"
             style="margin: 5px;"
             title="确认锁定选中的Token吗？"
             @confirm="handleTokenLockSelect">
@@ -38,10 +40,11 @@
               size="mini"
               type="warning"
               slot="reference"
-              :disabled="tokenSelection.length <= 0">锁定选中
+              :disabled="tokenTable.selection.length <= 0">锁定选中
           </el-button>
         </el-popconfirm>
         <el-button
+            v-if="hasAuthority('add_pass_token')"
             size="mini"
             type="success"
             @click="handleTokenAdd">添加Token
@@ -50,6 +53,7 @@
 
       <template slot-scope="scope" slot="operate">
         <el-popconfirm
+            v-if="hasAuthority('delete_pass_token')"
             style="margin: 5px;"
             title="确认删除该Token吗？"
             @confirm="handleTokenDelete(scope.$index, scope.row)">
@@ -62,6 +66,7 @@
         </el-popconfirm>
 
         <el-popconfirm
+            v-if="hasAuthority('change_pass_token')"
             style="margin: 5px;"
             title="确认锁定该Token吗？"
             @confirm="handleTokenLock(scope.$index, scope.row)">
@@ -73,6 +78,7 @@
           </el-button>
         </el-popconfirm>
         <el-button
+            v-if="hasAuthority('change_pass_token')"
             style="margin: 5px;"
             size="mini"
             type="success"
@@ -92,14 +98,14 @@
         width="600px"
         :title="tokenForm.popLabel"
         :close-on-click-modal="false"
-        :visible.sync="addTokenVisible">
-      <el-form :model="tokenForm" :rules="tokenRules" label-width="50px" ref="tokenForm">
+        :visible.sync="addTokenDialogVisible">
+      <el-form :model="tokenForm.formData" :rules="tokenForm.rules" label-width="50px" ref="tokenForm">
         <el-form-item label="注释" prop="tokenNote">
-          <el-input v-model.trim="tokenForm.tokenNote" autocomplete="on"></el-input>
+          <el-input v-model.trim="tokenForm.formData.tokenNote" autocomplete="on"></el-input>
         </el-form-item>
 
         <el-form-item label="过期" prop="expireDay">
-          <el-select v-model="tokenForm.expireDay" placeholder="请选择">
+          <el-select v-model="tokenForm.formData.expireDay" placeholder="请选择">
             <el-option value="" label="过期时间"></el-option>
             <el-option value="7" label="7天"></el-option>
             <el-option value="30" label="30天"></el-option>
@@ -111,11 +117,11 @@
 
           <el-date-picker
               style="margin-left: 10px"
-              v-model="tokenForm.expireTime"
+              v-model="tokenForm.formData.expireTime"
               type="datetime"
               placeholder="选择日期时间"
               align="right"
-              v-if="dayOptions.indexOf(tokenForm.expireDay) === -1">
+              v-if="dayOptions.indexOf(tokenForm.formData.expireDay) === -1">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -138,7 +144,7 @@ export default {
         return callback(new Error("请选择过期时间"));
       }
 
-      if (value === "-1" && !this.tokenForm.expireTime) {
+      if (value === "-1" && !this.tokenForm.formData.expireTime) {
         return callback(new Error("请填写自定义过期时间"));
       }
 
@@ -146,64 +152,68 @@ export default {
     };
 
     return {
-      addTokenVisible: false,
+      addTokenDialogVisible: false,
       dayOptions: ["", "7", "30", "60", "90", "0"],
       tokenForm: {
         popLabel: "",
-        tokenNote: "",
-        expireDay: "",
-        expireTime: "",
-      },
-      tokenRules: {
-        expireDay: [
-          {validator: checkExpireDay, trigger: "blur"}
-        ]
-      },
-      tokenFormOptions: {
-        inline: true,
-        size: "small",
-        forms: [
-          {prop: "tokenNote", label: "Token注释"},
-        ]
-      },
-      tokenColumns: [
-        {type: "selection"},
-        {prop: "tokenKey", label: "Token值", sortable: true, minWidth: 300},
-        {prop: "tokenNote", label: "Token注释", sortable: true, minWidth: 150},
-        {prop: "expireTime", label: "过期时间", slotName: "expireTime", sortable: true, width: 150},
-        {
-          prop: "updateTime", label: "修改时间", showOverflowTooltip: true, minWidth: 250,
-          render: row => {
-            return dateFormat(row.updateTime)
-          }
+        formData: {
+          tokenNote: "",
+          expireDay: "",
+          expireTime: "",
         },
-        {
-          prop: "createTime", label: "创建时间", showOverflowTooltip: true, minWidth: 250,
-          render: row => {
-            return dateFormat(row.createTime)
-          }
+        rules: {
+          expireDay: [
+            {validator: checkExpireDay, trigger: "blur"}
+          ]
+        }
+      },
+      tokenTable: {
+        options: {
+          inline: true,
+          size: "small",
+          forms: [
+            {prop: "tokenNote", label: "Token注释"},
+          ]
         },
-        {label: "操作", width: 185, slotName: "operate", fixed: "right"}
-      ],
-      tokenSelection: []
+        columns: [
+          {type: "selection"},
+          {prop: "tokenKey", label: "Token值", sortable: true, minWidth: 300},
+          {prop: "tokenNote", label: "Token注释", sortable: true, minWidth: 150},
+          {prop: "expireTime", label: "过期时间", slotName: "expireTime", sortable: true, width: 150},
+          {
+            prop: "updateTime", label: "修改时间", showOverflowTooltip: true, minWidth: 250,
+            render: row => {
+              return dateFormat(row.updateTime)
+            }
+          },
+          {
+            prop: "createTime", label: "创建时间", showOverflowTooltip: true, minWidth: 250,
+            render: row => {
+              return dateFormat(row.createTime)
+            }
+          },
+          {label: "操作", width: 185, slotName: "operate", fixed: "right"}
+        ],
+        selection: []
+      }
     }
   },
   computed: {
     tokenData() {
       const data = {
-        tokenNote: this.tokenForm.tokenNote,
+        tokenNote: this.tokenForm.formData.tokenNote,
         expireStamp: 0
       };
 
-      if (this.tokenForm.expireDay === "-1") {
-        data.expireStamp = new Date(this.tokenForm.expireTime).getTime();
+      if (this.tokenForm.formData.expireDay === "-1") {
+        data.expireStamp = new Date(this.tokenForm.formData.expireTime).getTime();
       } else {
-        const now = Number(this.tokenForm.expireDay);
+        const now = Number(this.tokenForm.formData.expireDay);
         data.expireStamp = (now === 0) ? 0 : new Date().getTime() + now * 24 * 60 * 60 * 1000;
       }
 
-      if (this.tokenForm.id) {
-        data.id = this.tokenForm.id;
+      if (this.tokenForm.formData.id) {
+        data.id = this.tokenForm.formData.id;
       }
 
       return data;
@@ -216,7 +226,7 @@ export default {
           return false;
         }
 
-        if (this.tokenForm.id) {
+        if (this.tokenForm.formData.id) {
           this.baseTokenEdit();
         } else {
           this.baseTokenAdd();
@@ -224,44 +234,42 @@ export default {
       });
     },
     handleTokenAdd() {
-      this.tokenForm = {
-        popLabel: "添加Token",
+      this.tokenForm.popLabel = "添加Token";
+      this.tokenForm.formData = {
         tokenNote: "",
         expireDay: "",
         expireTime: "",
       };
-      this.addTokenVisible = true;
+      this.addTokenDialogVisible = true;
     },
     handleTokenDelete(index, row) {
-      this.baseTokenDelete(row.id);
+      this.baseTokenDelete([row.id]);
     },
     handleTokenLock(index, row) {
-      this.baseTokenLock(row.id);
+      this.baseTokenLock([row.id]);
     },
     handleTokenDeleteSelect() {
-      this.baseTokenDelete(this.tokenSelection.join(","));
+      this.baseTokenDelete(this.tokenTable.selection);
     },
     handleTokenLockSelect() {
-      this.baseTokenLock(this.tokenSelection.join(","));
+      this.baseTokenLock(this.tokenTable.selection);
     },
     handleTokenEdit(index, row) {
-      this.tokenForm = {
+      this.tokenForm.popLabel = "修改Token";
+      this.tokenForm.formData = {
         id: row.id,
-        popLabel: "修改Token",
         tokenNote: row.tokenNote,
         expireDay: "",
         expireTime: "",
       };
-      this.addTokenVisible = true;
+      this.addTokenDialogVisible = true;
     },
     baseTokenAdd() {
-      this.$axios.post("/passToken", {}, {
-        params: this.tokenData
-      }).then(({data}) => {
+      this.$axios.post("/passToken", this.tokenData).then(({data}) => {
         if (data.code === 0) {
           this.$success(data.msg);
           // 隐藏窗口
-          this.addTokenVisible = false;
+          this.addTokenDialogVisible = false;
           //执行表格重载
           this.$refs.tokenTable.searchHandler(false);
         } else {
@@ -272,13 +280,11 @@ export default {
       });
     },
     baseTokenEdit() {
-      this.$axios.put("/passToken", {}, {
-        params: this.tokenData
-      }).then(({data}) => {
+      this.$axios.put("/passToken", this.tokenData).then(({data}) => {
         if (data.code === 0) {
           this.$success(data.msg);
           // 隐藏窗口
-          this.addTokenVisible = false;
+          this.addTokenDialogVisible = false;
           //执行表格重载
           this.$refs.tokenTable.searchHandler(false);
         } else {
@@ -288,9 +294,9 @@ export default {
         this.$error(err.toString());
       });
     },
-    baseTokenDelete(idStr) {
+    baseTokenDelete(tokenIds) {
       this.$axios.delete("/passToken", {
-        params: {id: idStr}
+        data: {tokenIds: tokenIds}
       }).then(({data}) => {
         if (data.code === 0) {
           this.$success(`Token已删除，已删除 ${data.count} 共 ${data.total}`);
@@ -303,10 +309,8 @@ export default {
         this.$error(err.toString());
       });
     },
-    baseTokenLock(idStr) {
-      this.$axios.put("/passToken/lock", {}, {
-        params: {id: idStr}
-      }).then(({data}) => {
+    baseTokenLock(tokenIds) {
+      this.$axios.put("/passToken/lock", {tokenIds: tokenIds}).then(({data}) => {
         if (data.code === 0) {
           this.$success(`Token已禁用，已禁用 ${data.count} 共 ${data.total}`);
           //执行表格重载
@@ -320,7 +324,7 @@ export default {
     },
     handleSelectionChange(changeItems) {
       //获取用户的选中
-      this.tokenSelection = changeItems.map(obj => {
+      this.tokenTable.selection = changeItems.map(obj => {
         return obj.id;
       });
     }

@@ -1,8 +1,9 @@
 <template>
-  <div class="upload-wrap">
+  <div class="upload-wrap" v-if="hasAuthority('add_file_attr')">
     <el-upload
         action="/fileAttr"
         :data="uploadData"
+        :headers="uploadHeaders"
         :on-success="handleSuccess"
         :before-remove="beforeRemove"
         with-credentials
@@ -19,8 +20,11 @@ export default {
   data() {
     return {
       uploadData: {
-        token: this.token
-      }
+        token: this.$store.state.passToken
+      },
+      uploadHeaders: {
+        'X-XSRF-TOKEN': this.$cookie.get("XSRF-TOKEN") || ""
+      },
     };
   },
   methods: {
@@ -33,7 +37,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.token) {
+    if (!this.$store.state.passToken) {
       delete this.uploadData.token;
     }
   }

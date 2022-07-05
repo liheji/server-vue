@@ -88,10 +88,35 @@ const copyText = function (element) {
     document.execCommand("copy");
 }
 
-function QS(key) {
+function queryLocationSearch(key) {
     const reg = new RegExp(`(^|\\?|&)${key}=([^&]*)(\\s|&|$)`, "i");
     if (reg.test(location.search)) return unescape(RegExp.$2.replace(/\+/g, " "));
     return "";
 }
 
-export {fileFormat, dateFormat, routeHandler, isMobile, copyText, QS}
+function genRandomString(len) {
+    const _charStr = 'abacdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789';
+
+    var _str = '', length = _charStr.length - 1;
+    if (len === undefined || len <= 0 || len > length) {
+        len = 6;
+    }
+    len = len || 15;
+    for (var i = 0; i < len; i++) {
+        _str += _charStr[Math.floor(Math.random() * length)];
+    }
+    return _str;
+}
+
+function camelName(name, trimFirst) {
+    var i = 0;
+    if (trimFirst) i++;
+    const strs = name.split("_");
+    var _str = "";
+    for (; i < strs.length; i++) {
+        _str += strs[i][0].toUpperCase() + strs[i].substring(1);
+    }
+    return _str;
+}
+
+export {fileFormat, dateFormat, routeHandler, isMobile, copyText, queryLocationSearch, genRandomString, camelName}

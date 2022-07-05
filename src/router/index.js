@@ -11,14 +11,16 @@ import Error500 from "@/components/Error500"
 
 import Main from "@/components/Main"
 import Token from "@/components/main/Token"
+import Group from "@/components/main/Group"
 import Upload from "@/components/main/Upload"
 import Format from "@/components/main/Format"
 import Device from "@/components/main/Device"
 import Socket from "@/components/main/Socket"
 import Server from "@/components/main/Server"
+import Account from "@/components/main/Account"
 import Download from "@/components/main/Download"
 import Personal from "@/components/main/Personal"
-import Account from "@/components/main/Account"
+import Permission from "@/components/main/Permission"
 
 //创建并暴露一个路由器
 const router = new VueRouter({
@@ -88,6 +90,20 @@ const router = new VueRouter({
                 component: Token,
                 meta: {
                     title: "Token管理"
+                }
+            }, {
+                name: "group",
+                path: "group",
+                component: Group,
+                meta: {
+                    title: "分组管理"
+                }
+            }, {
+                name: "permission",
+                path: "permission",
+                component: Permission,
+                meta: {
+                    title: "权限管理"
                 }
             }, {
                 name: "format",

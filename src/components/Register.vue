@@ -2,20 +2,20 @@
   <div class="register-wrap">
     <el-form ref="registerForm"
              class="register-form"
-             :rules="registerRules"
-             :model="registerForm">
+             :rules="registerForm.rules"
+             :model="registerForm.formData">
       <div class="register-face"><img src="@/assets/img/logo.png" alt="logo"></div>
       <el-form-item prop="username">
         <el-input type="text"
                   maxlength="18"
-                  v-model="registerForm.username"
+                  v-model="registerForm.formData.username"
                   placeholder="账号" autocomplete="on">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password"
-                  v-model="registerForm.password"
+                  v-model="registerForm.formData.password"
                   placeholder="密码"
                   autocomplete="on"
                   maxlength="18">
@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item prop="rePassword">
         <el-input type="password"
-                  v-model="registerForm.rePassword"
+                  v-model="registerForm.formData.rePassword"
                   placeholder="确认密码"
                   autocomplete="on"
                   maxlength="18">
@@ -33,7 +33,7 @@
       </el-form-item>
       <el-form-item prop="licence">
         <el-input type="text"
-                  v-model="registerForm.licence"
+                  v-model="registerForm.formData.licence"
                   placeholder="授权码"
                   autocomplete="on"
                   maxlength="32">
@@ -43,7 +43,7 @@
       <el-form-item prop="captcha">
         <el-input type="text"
                   maxlength="4"
-                  v-model="registerForm.captcha"
+                  v-model="registerForm.formData.captcha"
                   placeholder="验证码"
                   autocomplete="on"
                   @keyup.enter.native="submitForm">
@@ -68,9 +68,9 @@ export default {
   data: function () {
     const validateUname = (rule, value, callback) => {
       this.$sync({
-        url: "/before/usernameCheck",
+        url: "/before/uniqueCheck",
         method: "get",
-        params: {username: value}
+        params: {param: value}
       }).then(({data}) => {
         if (data && data.result) {
           callback(new Error('用户已存在'));
@@ -83,7 +83,7 @@ export default {
     };
 
     const validateRePwd = (rule, value, callback) => {
-      if (this.registerForm.password !== this.registerForm.rePassword) {
+      if (this.registerForm.formData.password !== this.registerForm.formData.rePassword) {
         callback(new Error('密码不一致'));
       } else {
         callback();
@@ -93,32 +93,34 @@ export default {
     return {
       loading: false,
       registerForm: {
-        username: "",
-        password: "",
-        rePassword: "",
-        licence: "",
-        captcha: "",
-      },
-      registerRules: {
-        username: [
-          {required: true, message: "请输入账号", trigger: "blur"},
-          {validator: validateUname, trigger: "blur"}
-        ],
-        password: [
-          {required: true, message: "请输入密码", trigger: "blur"}
-        ],
-        rePassword: [
-          {required: true, message: "请输入确认密码", trigger: "blur"},
-          {validator: validateRePwd, trigger: "blur"}
-        ],
-        licence: [
-          {required: true, message: "请输入授权码", trigger: "blur"},
-          {min: 32, max: 32, message: "长度应为32", trigger: "change"}
-        ],
-        captcha: [
-          {required: true, message: "请输入验证码", trigger: "blur"},
-          {min: 4, max: 4, message: "长度应为四", trigger: "change"}
-        ],
+        formData: {
+          username: "",
+          password: "",
+          rePassword: "",
+          licence: "",
+          captcha: "",
+        },
+        rules: {
+          username: [
+            {required: true, message: "请输入账号", trigger: "blur"},
+            {validator: validateUname, trigger: "blur"}
+          ],
+          password: [
+            {required: true, message: "请输入密码", trigger: "blur"}
+          ],
+          rePassword: [
+            {required: true, message: "请输入确认密码", trigger: "blur"},
+            {validator: validateRePwd, trigger: "blur"}
+          ],
+          licence: [
+            {required: true, message: "请输入授权码", trigger: "blur"},
+            {min: 32, max: 32, message: "长度应为32", trigger: "change"}
+          ],
+          captcha: [
+            {required: true, message: "请输入验证码", trigger: "blur"},
+            {min: 4, max: 4, message: "长度应为四", trigger: "change"}
+          ]
+        }
       }
     }
   },
@@ -129,9 +131,7 @@ export default {
           return false;
         }
         this.loading = true;
-        this.$axios.post("/before/register", {}, {
-          params: this.registerForm
-        }).then(({data}) => {
+        this.$axios.post("/before/register", this.registerForm.formData).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
             this.$router.push({name: "login"});

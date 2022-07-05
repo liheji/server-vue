@@ -1,5 +1,5 @@
 <template>
-  <div class="file-wrap">
+  <div class="file-wrap" v-if="hasAuthority('view_file_attr')">
     <el-search-table-pagination
         stripe
         border
@@ -11,13 +11,14 @@
         list-field="data.data"
         total-field="data.total"
         url="/fileAttr"
-        :columns="fileColumns"
+        :columns="fileForm.columns"
         :page-sizes="[10, 20, 50]"
-        :form-options="fileFormOptions"
+        :form-options="fileForm.options"
         @selection-change="handleSelectionChange">
 
       <template>
         <el-popconfirm
+            v-if="hasAuthority('delete_file_attr')"
             style="margin: 5px;"
             title="确认删除选中的文件吗？"
             @confirm="handleFileDeleteSelect">
@@ -25,13 +26,14 @@
               size="mini"
               type="danger"
               slot="reference"
-              :disabled="fileSelection.length <= 0">删除选中
+              :disabled="fileForm.selection.length <= 0">删除选中
           </el-button>
         </el-popconfirm>
         <el-button
+            v-if="hasAuthority('download_file_attr')"
             size="mini"
             type="primary"
-            :disabled="fileSelection.length <= 0"
+            :disabled="fileForm.selection.length <= 0"
             @click="handleFileDownloadSelect">下载选中
         </el-button>
       </template>
@@ -42,6 +44,7 @@
             title="确认删除该文件吗？"
             @confirm="handleFileDelete(scope.$index, scope.row)">
           <el-button
+              v-if="hasAuthority('delete_file_attr')"
               size="mini"
               type="danger"
               icon="el-icon-delete"
@@ -49,12 +52,14 @@
           </el-button>
         </el-popconfirm>
         <el-button
+            v-if="hasAuthority('download_file_attr')"
             size="mini"
             type="primary"
             icon="el-icon-download"
             @click="handleFileDownloadThis(scope.$index, scope.row)">
         </el-button>
         <el-button
+            v-if="hasAuthority('download_file_attr')"
             size="mini"
             type="primary"
             icon="el-icon-view"
@@ -79,47 +84,49 @@ export default {
   name: "Download",
   data() {
     return {
-      fileFormOptions: {
-        inline: true,
-        size: "small",
-        forms: [
-          {prop: "fileName", label: "文件名"},
-        ]
-      },
-      fileColumns: [
-        {type: "selection"},
-        {prop: "fileName", label: "文件名", sortable: true, width: 350},
-        {
-          prop: "fileSize", label: "文件大小", sortable: true, width: 150,
-          render: row => fileFormat(row.fileSize)
+      fileForm: {
+        options: {
+          inline: true,
+          size: "small",
+          forms: [
+            {prop: "fileName", label: "文件名"},
+          ]
         },
-        {
-          prop: "fileHash", label: "文件HASH值", showOverflowTooltip: true, minWidth: 300,
-          render: row => {
-            const name = MAP_HASH[row.fileHash.length] || "Other";
-            return `(${name})${row.fileHash}`;
-          }
-        },
-        {
-          prop: "createTime", label: "创建时间", showOverflowTooltip: true, minWidth: 250,
-          render: row => {
-            return dateFormat(row.createTime)
-          }
-        },
-        {label: "操作", width: 180, slotName: "operate", fixed: "right"}
-      ],
-      fileSelection: []
+        columns: [
+          {type: "selection"},
+          {prop: "fileName", label: "文件名", sortable: true, width: 350},
+          {
+            prop: "fileSize", label: "文件大小", sortable: true, width: 150,
+            render: row => fileFormat(row.fileSize)
+          },
+          {
+            prop: "fileHash", label: "文件HASH值", showOverflowTooltip: true, minWidth: 300,
+            render: row => {
+              const name = MAP_HASH[row.fileHash.length] || "Other";
+              return `(${name})${row.fileHash}`;
+            }
+          },
+          {
+            prop: "createTime", label: "创建时间", showOverflowTooltip: true, minWidth: 250,
+            render: row => {
+              return dateFormat(row.createTime)
+            }
+          },
+          {label: "操作", width: 180, slotName: "operate", fixed: "right"}
+        ],
+        selection: []
+      }
     }
   },
   methods: {
     handleFileDeleteSelect() {
-      this.baseFileDelete(this.fileSelection.join(","));
+      this.baseFileDelete(this.fileForm.selection);
     },
     handleFileDelete(index, row) {
-      this.baseFileDelete(row.id);
+      this.baseFileDelete([row.id]);
     },
     handleFileDownloadSelect() {
-      this.fileSelection.forEach((val) => {
+      this.fileForm.selection.forEach((val) => {
         window.open(`/fileAttr/download?param=${val}`, '_blank');
       });
     },
@@ -131,13 +138,13 @@ export default {
     },
     handleSelectionChange(changeItems) {
       //获取用户的选中
-      this.fileSelection = changeItems.map(obj => {
+      this.fileForm.selection = changeItems.map(obj => {
         return obj.id;
       });
     },
-    baseFileDelete(idStr) {
+    baseFileDelete(fileIds) {
       this.$axios.delete("/fileAttr", {
-        params: {id: idStr}
+        data: {fileIds: fileIds}
       }).then(({data}) => {
         if (data.code === 0) {
           this.$success(`文件已删除，已删除 ${data.count} 共 ${data.total}`);

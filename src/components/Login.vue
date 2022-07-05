@@ -2,12 +2,12 @@
   <div class="login-wrap">
     <el-form ref="loginForm"
              class="login-form"
-             :rules="loginRules"
-             :model="loginForm">
+             :rules="loginForm.rules"
+             :model="loginForm.formData">
       <div class="login-face"><img src="@/assets/img/logo.png" alt="logo"></div>
       <el-form-item prop="username">
         <el-input type="text" maxlength="18"
-                  v-model="loginForm.username"
+                  v-model="loginForm.formData.username"
                   placeholder="账号" autocomplete="on"
                   @input.once="delete $route.params.msg">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password"
-                  v-model="loginForm.password"
+                  v-model="loginForm.formData.password"
                   placeholder="密码"
                   autocomplete="on"
                   maxlength="18"
@@ -25,7 +25,7 @@
       </el-form-item>
       <el-form-item prop="captcha" style="margin-bottom: 5px;">
         <el-input type="text" maxlength="4"
-                  v-model="loginForm.captcha"
+                  v-model="loginForm.formData.captcha"
                   placeholder="验证码" autocomplete="on"
                   @keyup.enter.native="submitForm"
                   @input.once="delete $route.params.msg">
@@ -37,7 +37,7 @@
         </el-input>
       </el-form-item>
       <el-form-item style="margin-bottom: 0;">
-        <el-checkbox v-model="loginForm.remember">14天免登录</el-checkbox>
+        <el-checkbox v-model="loginForm.formData.remember">14天免登录</el-checkbox>
         <div style="float: right;height: 40px;">
           <el-link :underline="false" index="/forget" @click="routerPush">忘记密码？</el-link>
           <el-link :underline="false" index="/register" @click="routerPush">注册</el-link>
@@ -59,22 +59,24 @@ export default {
     return {
       loading: false,
       loginForm: {
-        username: "",
-        password: "",
-        captcha: "",
-        remember: false,
-      },
-      loginRules: {
-        username: [
-          {required: true, message: "请输入账号", trigger: "blur"}
-        ],
-        password: [
-          {required: true, message: "请输入密码", trigger: "blur"}
-        ],
-        captcha: [
-          {required: true, message: "请输入验证码", trigger: "blur"},
-          {min: 4, max: 4, message: "长度应为四", trigger: "change"},
-        ],
+        formData: {
+          username: "",
+          password: "",
+          captcha: "",
+          remember: false,
+        },
+        rules: {
+          username: [
+            {required: true, message: "请输入账号", trigger: "blur"}
+          ],
+          password: [
+            {required: true, message: "请输入密码", trigger: "blur"}
+          ],
+          captcha: [
+            {required: true, message: "请输入验证码", trigger: "blur"},
+            {min: 4, max: 4, message: "长度应为四", trigger: "change"},
+          ],
+        }
       },
       redirect: undefined,
       otherQuery: {}
@@ -92,12 +94,10 @@ export default {
           return false;
         }
         this.loading = true;
-        this.$axios.post("/login", {}, {
-          params: this.loginForm
-        }).then(({data}) => {
+        this.$axios.post("/login", this.loginForm.formData).then(({data}) => {
           if (data.code === 0) {
-            this.$bus.isLogin = true;
-            this.$bus.user = data.data;
+            this.$store.commit("setIsLogin", true);
+            this.$store.commit("setUser", data.data);
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
