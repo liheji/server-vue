@@ -5,12 +5,12 @@
              :rules="forgetForm.rules"
              :model="forgetForm.formData">
       <div class="forget-face"><img src="@/assets/img/logo.png" alt="logo"></div>
-      <el-form-item prop="email">
+      <el-form-item prop="username">
         <el-input type="text"
-                  v-model="forgetForm.formData.email"
-                  placeholder="邮箱"
+                  v-model="forgetForm.formData.username"
+                  placeholder="邮箱或手机号"
                   autocomplete="on">
-          <i class="el-icon-server-email el-input__icon iconfont" slot="prefix"></i>
+          <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="key">
@@ -21,8 +21,8 @@
           <el-button slot="append"
                      style="width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
                      :disabled="timing > 0"
-                     :class="timing > 0 ? 'email-disactive' : 'email-active'"
-                     @click="sendEmailCaptcha">
+                     :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
+                     @click="sendCaptcha">
             {{ timing > 0 ? timing : "获取" }}
           </el-button>
         </el-input>
@@ -70,6 +70,12 @@ export default {
   name: "Forget",
   data: function () {
     const validateUname = (rule, value, callback) => {
+      if (!/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(value) &&
+          !/^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(value)) {
+        callback(new Error('邮箱或手机号格式错误'));
+        return;
+      }
+
       this.$sync({
         url: "/before/uniqueCheck",
         method: "get",
@@ -78,7 +84,7 @@ export default {
         if (data && data.result) {
           callback();
         } else {
-          callback(new Error('邮箱不存在'));
+          callback(new Error('用户未绑定邮箱或手机号'));
         }
       }).catch((ignored) => {
         callback(new Error('校验错误'));
@@ -98,47 +104,52 @@ export default {
       loading: false,
       forgetForm: {
         formData: {
-          email: "",
+          username: "",
           password: "",
           rePassword: "",
           key: "",
           captcha: "",
         },
         rules: {
-          email: [
-            {required: true, message: "请输入邮箱", trigger: "blur"},
-            {type: 'email', message: "邮箱格式错误", trigger: "blur"},
+          username: [
+            {required: true, message: "请输入邮箱或手机号", trigger: "blur"},
             {validator: validateUname, trigger: "blur"}
           ],
           key: [
             {required: true, message: "请输入校验码", trigger: "blur"},
-            {min: 6, max: 6, message: "长度应为6", trigger: "change"}
+            {min: 6, max: 6, message: "长度应为6", trigger: "blur"}
           ],
           password: [
-            {required: true, message: "请输入密码", trigger: "blur"}
+            {required: true, message: "请输入密码", trigger: "blur"},
+            {min: 5, max: 18, message: "长度应在5-18", trigger: "blur"}
           ],
           rePassword: [
-            {required: true, message: "请输入确认密码", trigger: "blur"},
+            {required: true, message: "请确认密码", trigger: "blur"},
+            {min: 5, max: 18, message: "长度应在5-18", trigger: "blur"},
             {validator: validateRePwd, trigger: "blur"}
           ],
           captcha: [
             {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: "长度应为四", trigger: "change"}
+            {min: 4, max: 4, message: "长度应为四", trigger: "blur"}
           ]
         }
       }
     }
   },
   methods: {
-    sendEmailCaptcha() {
-      this.$refs.forgetForm.validateField("email", (valid) => {
+    sendCaptcha() {
+      this.$refs.forgetForm.validateField("username", (valid) => {
         if (valid) {
           return false;
         }
         this.timing = 60;
         this.startTimer();
-        this.$axios.get("/before/emailCaptcha", {
-          params: {receiver: this.forgetForm.formData.email}
+
+        this.$axios.get("/before/sendCaptcha", {
+          params: {
+            receiver: this.forgetForm.formData.username,
+            property: this.forgetForm.formData.username.indexOf("@") >= 0 ? "email" : "mobile"
+          }
         }).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
@@ -250,13 +261,13 @@ export default {
   padding: 0 !important;
 }
 
-.forget-wrap .email-active {
+.forget-wrap .timing-active {
   color: #FFF !important;
   background-color: #409EFF !important;
   border-color: #409EFF !important;
 }
 
-.forget-wrap .email-disactive {
+.forget-wrap .timing-disactive {
   pointer-events: none;
 }
 </style>

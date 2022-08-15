@@ -67,6 +67,11 @@ export default {
   name: "Register",
   data: function () {
     const validateUname = (rule, value, callback) => {
+      if (/^[a-zA-Z]\w+$/.test(value)) {
+        callback(new Error('必须以字母开头'));
+        return;
+      }
+
       this.$sync({
         url: "/before/uniqueCheck",
         method: "get",
@@ -103,22 +108,25 @@ export default {
         rules: {
           username: [
             {required: true, message: "请输入账号", trigger: "blur"},
+            {min: 5, max: 18, message: "长度应在5-18", trigger: "blur"},
             {validator: validateUname, trigger: "blur"}
           ],
           password: [
-            {required: true, message: "请输入密码", trigger: "blur"}
+            {required: true, message: "请输入密码", trigger: "blur"},
+            {min: 5, max: 18, message: "长度应在5-18", trigger: "blur"},
           ],
           rePassword: [
             {required: true, message: "请输入确认密码", trigger: "blur"},
+            {min: 5, max: 18, message: "长度应在5-18", trigger: "blur"},
             {validator: validateRePwd, trigger: "blur"}
           ],
           licence: [
             {required: true, message: "请输入授权码", trigger: "blur"},
-            {min: 32, max: 32, message: "长度应为32", trigger: "change"}
+            {min: 32, max: 32, message: "长度应为32", trigger: "blur"}
           ],
           captcha: [
             {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: "长度应为四", trigger: "change"}
+            {min: 4, max: 4, message: "长度应为四", trigger: "blur"}
           ]
         }
       }

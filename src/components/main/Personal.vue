@@ -13,22 +13,22 @@
       <el-descriptions-item label="手机号">
         {{ user.mobile || "未绑定" }}
         <el-link style="margin-left: 10px;" v-if="exitMobile" type="primary"
-                 @click="mobileDialogVisible=!mobileDialogVisible;mobileForm.formData.mobile=user.mobile">
+                 @click="mobileDialogVisible=!mobileDialogVisible;mobileForm.formData.value=user.mobile">
           解绑
         </el-link>
         <el-link style="margin-left: 10px;" v-else type="primary"
-                 @click="mobileDialogVisible=!mobileDialogVisible;mobileForm.formData.mobile=''">
+                 @click="mobileDialogVisible=!mobileDialogVisible;mobileForm.formData.value=''">
           绑定
         </el-link>
       </el-descriptions-item>
       <el-descriptions-item label="E-mail">
         {{ user.email || "未绑定" }}
         <el-link style="margin-left: 10px;" v-if="exitEmail" type="primary"
-                 @click="emailDialogVisible=!emailDialogVisible;emailForm.formData.email=user.email">
+                 @click="emailDialogVisible=!emailDialogVisible;emailForm.formData.value=user.email">
           解绑
         </el-link>
         <el-link style="margin-left: 10px;" v-else type="primary"
-                 @click="emailDialogVisible=!emailDialogVisible;emailForm.formData.email=''">
+                 @click="emailDialogVisible=!emailDialogVisible;emailForm.formData.value=''">
           绑定
         </el-link>
       </el-descriptions-item>
@@ -44,9 +44,9 @@
         :close-on-click-modal="false"
         :visible.sync="mobileDialogVisible">
       <el-form label-width="0" :model="mobileForm.formData" :rules="mobileForm.rules" ref="mobileForm">
-        <el-form-item prop="mobile">
+        <el-form-item prop="value">
           <el-input type="text"
-                    v-model="mobileForm.formData.mobile"
+                    v-model="mobileForm.formData.value"
                     placeholder="手机号"
                     :readonly="exitMobile"
                     autocomplete="on">
@@ -62,7 +62,7 @@
                        style="margin: 0;width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
                        :disabled="timing > 0"
                        :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
-                       @click="sendMobileCaptcha">
+                       @click="sendCaptcha(mobileForm.formData.value, 'mobile')">
               {{ timing > 0 ? timing : "获取" }}
             </el-button>
           </el-input>
@@ -84,9 +84,9 @@
         :close-on-click-modal="false"
         :visible.sync="emailDialogVisible">
       <el-form label-width="0" :model="emailForm.formData" :rules="emailForm.rules" ref="emailForm">
-        <el-form-item prop="email">
+        <el-form-item prop="value">
           <el-input type="text"
-                    v-model="emailForm.formData.email"
+                    v-model="emailForm.formData.value"
                     placeholder="邮箱"
                     :readonly="exitEmail"
                     autocomplete="on">
@@ -102,7 +102,7 @@
                        style="margin: 0;width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
                        :disabled="timing > 0"
                        :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
-                       @click="sendEmailCaptcha">
+                       @click="sendCaptcha(emailForm.formData.value,'email')">
               {{ timing > 0 ? timing : "获取" }}
             </el-button>
           </el-input>
@@ -124,8 +124,8 @@
         :close-on-click-modal="false"
         :visible.sync="pwdDialogVisible">
       <el-form label-width="0" :model="pwdForm.formData" :rules="pwdForm.rules" ref="pwdForm">
-        <el-form-item prop="password">
-          <el-input type="password" v-model="pwdForm.formData.password" autocomplete="off" placeholder="原密码"></el-input>
+        <el-form-item prop="value">
+          <el-input type="password" v-model="pwdForm.formData.value" autocomplete="off" placeholder="原密码"></el-input>
         </el-form-item>
 
         <el-form-item prop="newPassword">
@@ -198,10 +198,27 @@ export default {
     };
 
     const validateMobile = (rule, value, callback) => {
-      if (!/^((\+86)|(86))?1\d{10}$/g.test(value)) {
-        return callback(new Error("手机号格式错误"));
+      if (this.exitMobile) {
+        callback();
+      } else {
+        if (!/^((\+86)|(86))?1\d{10}$/g.test(value)) {
+          return callback(new Error("手机号格式错误"));
+        }
+
+        this.$sync({
+          url: "/before/uniqueCheck",
+          method: "get",
+          params: {param: value}
+        }).then(({data}) => {
+          if (data && data.result) {
+            callback(new Error('手机号已存在'));
+          } else {
+            callback();
+          }
+        }).catch((ignored) => {
+          callback(new Error('校验错误'));
+        });
       }
-      callback();
     };
 
     return {
@@ -212,14 +229,14 @@ export default {
       mobileDialogVisible: false,
       pwdForm: {
         formData: {
-          password: "",
+          value: "",
           newPassword: "",
           reNewPassword: "",
           captcha: "",
-          type: "password"
+          property: "password"
         },
         rules: {
-          password: [
+          value: [
             {required: true, message: "请输入密码", trigger: "blur"}
           ],
           newPassword: [
@@ -238,12 +255,12 @@ export default {
       },
       emailForm: {
         formData: {
-          email: this.$store.state.user.email,
+          value: this.$store.state.user.email,
           captcha: "",
-          type: "email"
+          property: "email"
         },
         rules: {
-          email: [
+          value: [
             {required: true, message: "请输入邮箱", trigger: "blur"},
             {type: 'email', message: "邮箱格式错误", trigger: "blur"},
             {validator: validateEmail, trigger: "blur"}
@@ -256,12 +273,12 @@ export default {
       },
       mobileForm: {
         formData: {
-          mobile: this.$store.state.user.mobile,
+          value: this.$store.state.user.mobile,
           captcha: "",
-          type: "mobile"
+          property: "mobile"
         },
         rules: {
-          mobile: [
+          value: [
             {required: true, message: "请输入手机号", trigger: "blur"},
             {min: 11, max: 14, message: "手机号格式错误", trigger: "blur"},
             {validator: validateMobile, trigger: "blur"}
@@ -284,30 +301,25 @@ export default {
     }
   },
   methods: {
-    sendEmailCaptcha() {
+    sendCaptcha(receiver, property) {
       this.timing = 60;
       this.startTimer();
-      this.$axios.get("/emailCaptcha", {
-        params: {receiver: this.emailForm.formData.email}
+      this.$axios.get("/sendCaptcha", {
+        params: {receiver: receiver, property: property}
       }).then(({data}) => {
         if (data.code === 0) {
           this.$success(data.msg);
         } else {
-          this.$warning(data.msg);
+          this.$notify({
+            type: 'success',
+            title: '成功',
+            dangerouslyUseHTMLString: true,
+            message: "模拟请求<br>验证码发送成功<br>验证码：" + genRandomString(6)
+          });
         }
       }).catch((err) => {
         this.$error(err.toString());
       })
-    },
-    sendMobileCaptcha() {
-      this.timing = 60;
-      this.startTimer();
-      this.$notify({
-        type: 'success',
-        title: '成功',
-        dangerouslyUseHTMLString: true,
-        message: "模拟请求<br>验证码发送成功<br>验证码：" + genRandomString(6)
-      });
     },
     pwdSubmitForm() {
       this.$refs.pwdForm.validate((valid) => {
@@ -336,7 +348,7 @@ export default {
     },
     bindEmail() {
       if (this.exitEmail) {
-        this.emailForm.formData.email = "";
+        this.emailForm.formData.value = "";
         this.$refs.emailForm.validateField("captcha", (valid) => {
           if (valid) {
             return false;
@@ -354,7 +366,7 @@ export default {
     },
     bindMobile() {
       if (this.exitMobile) {
-        this.mobileForm.formData.mobile = "";
+        this.mobileForm.formData.value = "";
         this.$refs.mobileForm.validateField("captcha", (valid) => {
           if (valid) {
             return false;
@@ -375,8 +387,8 @@ export default {
       this.$axios.put("/account/personal", this.emailForm.formData).then(({data}) => {
         if (data.code === 0) {
           this.$store.commit("setUserProperty", {
-            property: "email",
-            value: this.emailForm.formData.email
+            property: this.emailForm.formData.property,
+            value: this.emailForm.formData.value
           });
           this.$refs.emailForm.resetFields();
           this.emailDialogVisible = false;
@@ -396,8 +408,8 @@ export default {
       this.$axios.put("/account/personal", this.mobileForm.formData).then(({data}) => {
         if (data.code === 0) {
           this.$store.commit("setUserProperty", {
-            property: "mobile",
-            value: this.mobileForm.formData.mobile
+            property: this.mobileForm.formData.property,
+            value: this.mobileForm.formData.value
           })
           this.$refs.mobileForm.resetFields();
           this.mobileDialogVisible = false;
