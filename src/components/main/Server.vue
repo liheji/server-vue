@@ -4,7 +4,7 @@
       socket状态：
       <el-tag type="success" v-if="this.socket.readyState === 1">已连接</el-tag>
       <template v-else>
-        <el-tag type="danger">错误</el-tag>
+        <el-tag type="danger">未连接</el-tag>
         <el-button size="small" type="primary"
                    style="margin-left: 10px;"
                    :loading="websocketBtnLoading"
@@ -131,7 +131,7 @@
             <el-form-item label="授权文件">
               <el-upload
                   ref="auth"
-                  action="/fileAttr"
+                  action="/fileInfo"
                   with-credentials
                   :limit="1"
                   :multiple="false"
@@ -139,6 +139,7 @@
                   :on-error="authFileError"
                   :on-change="authFileChange"
                   :on-success="authFileSuccess"
+                  :before-upload="authFileBeforeUpload"
                   :headers="serverForm.fileHeaders"
                   :show-file-list="false">
                 <el-button size="mini" type="primary" @click="$refs.auth.clearFiles()">选择文件</el-button>
@@ -314,13 +315,18 @@ export default {
       this.serverForm.fileMsg = file.name;
     },
     authFileError() {
-      this.serverForm.fileMsg = '失败'
+      this.serverForm.fileMsg = '上传失败'
       this.serverForm.btnLoading = false;
     },
     authFileSuccess(resp) {
-      this.serverForm.fileMsg = '文件上传成功'
-      this.serverForm.formData.authFile = resp.data[0].fileName;
+      this.serverForm.fileMsg = '上传成功'
+      this.serverForm.formData.authFile = resp.data.fileInfo.fileName;
       this.serverConnect();
+      this.serverForm.btnLoading = false;
+    },
+    authFileBeforeUpload(file) {
+      this.serverForm.fileMsg = '校验中...';
+      return this.uploadCheck(file, this.$refs.auth);
     },
     serverConnect() {
       if (this.socket.readyState === WebSocket.OPEN) {
@@ -340,7 +346,7 @@ export default {
     },
     websocketConnect() {
       this.websocketBtnLoading = true;
-      this.$axios.get("/webSocketCaptcha").then(resp => {
+      this.$axios.get("/socketCaptcha").then(resp => {
         setTimeout(() => {
           if (this.socket.readyState !== WebSocket.OPEN) {
             this.socket.close();
@@ -358,6 +364,7 @@ export default {
 
         this.socket.onclose = (event) => {
           this.websocketBtnLoading = false;
+          this.socket = {readyState: 0};
           this.$error('socket 连接已断开');
         }
 
@@ -395,6 +402,7 @@ export default {
         }
       }).catch((err) => {
         this.websocketBtnLoading = false;
+        this.socket = {readyState: 0};
         this.$error('连接失败：' + err.toString());
       });
     }

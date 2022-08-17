@@ -59,9 +59,9 @@
             <i class="el-icon-lock"></i>
             权限管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('add_file_attr')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
+          <el-menu-item v-if="hasAuthority('add_file_info')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('view_file_attr')" index="/main/download"><i class="el-icon-download"></i>下载管理
+          <el-menu-item v-if="hasAuthority('view_file_info')" index="/main/download"><i class="el-icon-download"></i>下载管理
           </el-menu-item>
           <el-menu-item v-if="hasAuthority('view_pass_token')" index="/main/token"><i class="el-icon-tickets"></i>Token管理
           </el-menu-item>

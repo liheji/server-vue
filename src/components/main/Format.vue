@@ -47,7 +47,7 @@ export default {
       if (resp.code === 0) {
         this.formatTips = "格式化完成(<span style='color: red;'>10分钟后失效</span>)";
         a.innerHTML = resp.fileName;
-        a.href = `/fileAttr/download?param=${resp.fileName}`;
+        a.href = `/fileInfo/download/${resp.fileName}`;
       } else {
         this.formatTips = `<span style='color: red;'>${resp.msg}</span>`;
         a.innerHTML = resp.msg;

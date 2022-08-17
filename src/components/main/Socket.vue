@@ -68,7 +68,7 @@ export default {
       this.connectBtnLoading = true;
       this.pushMsg("正在连接服务器...")
 
-      this.$axios.get("/webSocketCaptcha").then(resp => {
+      this.$axios.get("/socketCaptcha").then(resp => {
         setTimeout(() => {
           if (this.socket.readyState !== WebSocket.OPEN) {
             this.socket.close();

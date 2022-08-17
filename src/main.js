@@ -24,7 +24,7 @@ import axios from "axios"
 import cookie from "js-cookie"
 
 //工具包（自定义）
-import {dateFormat, queryLocationSearch} from "@/util"
+import {dateFormat, queryLocationSearch, calculateMd5} from "@/util"
 
 //解决当前位置的冗余导航
 const originalPush = VueRouter.prototype.push;
@@ -127,6 +127,36 @@ function initGlobal(that) {
                     }
                 }
             }).catch((ignored) => {
+        });
+    }
+
+    Vue.prototype.uploadCheck = (file, upload) => {
+        return new Promise((resolve, reject) => {
+            calculateMd5(file).then((md5) => {
+                that.$sync({
+                    url: '/fileInfo/verify',
+                    method: 'get',
+                    params: {
+                        'fileSize': file.size,
+                        'fileHash': md5,
+                        'fileName': file.name
+                    },
+                }).then(({data}) => {
+                    if (data.code === 1) {
+                        upload.$refs['upload-inner'].headers['UPLOAD-TOKEN'] = data.key;
+                        resolve()
+                    } else {
+                        upload.handleSuccess(data, file);
+                        reject()
+                    }
+                }).catch((err) => {
+                    that.$warning(err.toString())
+                    reject()
+                })
+            }).catch((err) => {
+                that.$warning(err.toString())
+                reject()
+            });
         });
     }
 }
