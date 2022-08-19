@@ -10,13 +10,7 @@
         :before-remove="beforeRemove"
         with-credentials
         multiple>
-      <div>
-        <el-button size="medium" type="primary">点击上传</el-button>
-        <el-tag effect="plain" type="primary" size="medium"
-                style="margin-left: 10px;border: none;">
-          {{ fileMag }}
-        </el-tag>
-      </div>
+      <el-button size="medium" type="primary">点击上传</el-button>
       <div slot="tip" class="el-upload__tip">累计大小不要超过16GB</div>
     </el-upload>
   </div>
@@ -27,7 +21,6 @@ export default {
   name: "Upload",
   data() {
     return {
-      fileMag: "未选择文件",
       uploadData: {
         token: this.$store.state.passToken
       },
@@ -39,30 +32,24 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-      this.fileMag = `正在校验 ${file.name} 文件`
-      const ret = this.uploadCheck(file, this.$refs.upload);
-      this.fileMag = `正在上传 ${file.name} 文件`
-      return ret;
+      return this.uploadCheck(file, this.$refs.upload);
     },
-    handleSuccess(resp, file, fileList) {
+    handleSuccess(resp, file) {
       //设置 UID对应的 href
-      this.fileMag = `${file.status} 上传成功`
       document.getElementById(file.uid).href = `/fileInfo/download/${resp.data.id}`;
-      var i = 0;
-      for (i = 0; i < fileList.length; i++) {
-        if (fileList[i].status === 'ready') break;
-      }
-
-      if (i >= fileList.length) {
-        this.fileMag = `上传完成`
-      }
     },
-    beforeRemove(file, fileList) {
-      if (file.status === 'success' && file.percentage === 0) {
-        file.percentage = 100;
-        return false;
+    beforeRemove(file) {
+      if (file) {
+        if (file.status === 'success' && file.percentage === 0) {
+          file.percentage = 100;
+          return false;
+        } else if (file.status !== 'success') {
+          return true;
+        } else {
+          return this.$confirm(`从列表中移除 ${file.name} 文件？`);
+        }
       } else {
-        return this.$confirm(`从列表中移除 ${file.name} 文件？`);
+        return false;
       }
     }
   },

@@ -13,9 +13,10 @@ module.exports = {
     configureWebpack: config => {
         if (process.env.NODE_ENV === "production") {
             config.externals = { // 不会被打包的库
-                'axios': 'axios',
                 'vue': 'Vue',
-                'vue-router': 'VueRouter'
+                'vue-router': 'VueRouter',
+                // 其他
+                'axios': 'axios'
             }
         }
     },

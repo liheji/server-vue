@@ -1,4 +1,4 @@
-import SparkMD5 from "spark-md5";
+import CryptoJS from "crypto-js";
 
 const dateFormat = function (date, fmt) {
     date = new Date(date);
@@ -121,29 +121,67 @@ function camelName(name, trimFirst) {
     return _str;
 }
 
-const calculateMd5 = (file) => {
+const calculateHash = (file, algorithm, callback) => {
     return new Promise((resolve, reject) => {
+        if (typeof algorithm === "string") {
+            algorithm = [algorithm];
+        }
+
+        var cryptos = [];
+        for (var alg of algorithm) {
+            switch (alg.toLowerCase()) {
+                case "md5":
+                    cryptos.push(CryptoJS.algo.MD5.create());
+                    break;
+                case "sha1":
+                    cryptos.push(CryptoJS.algo.SHA1.create());
+                    break;
+                case "sha256":
+                    cryptos.push(CryptoJS.algo.SHA256.create());
+                    break;
+                case "sha512":
+                    cryptos.push(CryptoJS.algo.SHA512.create());
+                    break;
+                case "ripemd160":
+                    cryptos.push(CryptoJS.algo.RIPEMD160.create());
+                    break;
+                default:
+                    return reject(`不支持的算法 ${alg}`);
+            }
+        }
 
         var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
             chunkSize = 2097152, // Read in chunks of 2MB
             chunks = Math.ceil(file.size / chunkSize),
             currentChunk = 0,
-            spark = new SparkMD5.ArrayBuffer(),
             fileReader = new FileReader();
 
         fileReader.onload = function (e) {
-            spark.append(e.target.result);                   // Append array buffer
+            var res = CryptoJS.lib.WordArray.create(e.target.result);
+            for (var crypto of cryptos) {
+                crypto.update(res)
+            }
             currentChunk++;
+
+            if (callback && typeof callback == 'function') {
+                if (callback() === false) {
+                    return reject("计算终止")
+                }
+            }
 
             if (currentChunk < chunks) {
                 loadNext();
             } else {
-                resolve(spark.end(false))
+                var ret = "";
+                for (var cry of cryptos) {
+                    ret += cry.finalize().toString();
+                }
+                return resolve(ret.toUpperCase());
             }
         };
 
         fileReader.onerror = function (err) {
-            reject(err.toString())
+            return reject(err.toString());
         };
 
         function loadNext() {
@@ -153,7 +191,6 @@ const calculateMd5 = (file) => {
         }
 
         loadNext();
-
     });
 }
 
@@ -166,5 +203,5 @@ export {
     queryLocationSearch,
     genRandomString,
     camelName,
-    calculateMd5
+    calculateHash
 }

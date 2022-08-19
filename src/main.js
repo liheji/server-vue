@@ -24,7 +24,7 @@ import axios from "axios"
 import cookie from "js-cookie"
 
 //工具包（自定义）
-import {dateFormat, queryLocationSearch, calculateMd5} from "@/util"
+import {dateFormat, queryLocationSearch, calculateHash} from "@/util"
 
 //解决当前位置的冗余导航
 const originalPush = VueRouter.prototype.push;
@@ -132,15 +132,17 @@ function initGlobal(that) {
 
     Vue.prototype.uploadCheck = (file, upload) => {
         return new Promise((resolve, reject) => {
-            calculateMd5(file).then((md5) => {
+            calculateHash(file, ["md5", "sha256"], () => {
+                return upload.uploadFiles.filter(tmp => tmp.uid === file.uid).length > 0;
+            }).then((hash) => {
                 that.$sync({
                     url: '/fileInfo/verify',
-                    method: 'get',
-                    params: {
+                    method: 'post',
+                    data: {
                         'fileSize': file.size,
-                        'fileHash': md5,
+                        'fileHash': hash,
                         'fileName': file.name
-                    },
+                    }
                 }).then(({data}) => {
                     if (data.code === 1) {
                         upload.$refs['upload-inner'].headers['UPLOAD-TOKEN'] = data.key;
