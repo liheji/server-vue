@@ -194,6 +194,15 @@ const calculateHash = (file, algorithm, callback) => {
     });
 }
 
+
+const base64Decode = (str) => {
+    return JSON.parse(CryptoJS.enc.Base64.parse(str).toString(CryptoJS.enc.Utf8))
+}
+
+const base64Encode = (str) => {
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(str))
+}
+
 export {
     fileFormat,
     dateFormat,
@@ -203,5 +212,7 @@ export {
     queryLocationSearch,
     genRandomString,
     camelName,
-    calculateHash
+    calculateHash,
+    base64Decode,
+    base64Encode
 }

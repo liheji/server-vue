@@ -24,7 +24,7 @@ import axios from "axios"
 import cookie from "js-cookie"
 
 //工具包（自定义）
-import {dateFormat, queryLocationSearch, calculateHash} from "@/util"
+import {dateFormat, queryLocationSearch, calculateHash, base64Decode} from "@/util"
 
 //解决当前位置的冗余导航
 const originalPush = VueRouter.prototype.push;
@@ -59,7 +59,7 @@ new Vue({
             .then(({data}) => {
                 if (data.code === 0) {
                     this.$store.commit("setIsLogin", true);
-                    this.$store.commit("setUser", JSON.parse(window.atob(data.data)));
+                    this.$store.commit("setUser", base64Decode(data.data));
                     if (this.$route.meta.withoutAuth) {
                         this.$router.push({name: "personal"});
                     }

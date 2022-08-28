@@ -67,7 +67,7 @@ export default {
   name: "Register",
   data: function () {
     const validateUname = (rule, value, callback) => {
-      if (/^[a-zA-Z]\w+$/.test(value)) {
+      if (!/^[a-zA-Z]\w+$/.test(value)) {
         callback(new Error('必须以字母开头'));
         return;
       }
@@ -170,7 +170,7 @@ export default {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding-top: 15%;
+  padding-top: 10%;
   background-repeat: no-repeat;
   background-position: center right;
   background-size: 100%;

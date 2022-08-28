@@ -3,6 +3,7 @@ import VueRouter from "vue-router"
 import {routeHandler} from "@/util"
 //引入组件
 import Login from "@/components/Login"
+import Captcha from "@/components/Captcha"
 import Forget from "@/components/Forget"
 import Register from "@/components/Register"
 
@@ -31,6 +32,15 @@ const router = new VueRouter({
         name: "login",
         path: "/login",
         component: Login,
+        beforeEnter: routeHandler,
+        meta: {
+            title: "系统登录",
+            withoutAuth: true
+        }
+    }, {
+        name: "captcha",
+        path: "/captcha",
+        component: Captcha,
         beforeEnter: routeHandler,
         meta: {
             title: "系统登录",

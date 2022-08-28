@@ -1,55 +1,44 @@
 <template>
-  <div class="login-wrap">
-    <el-form ref="loginForm"
-             class="login-form"
-             :rules="loginForm.rules"
-             :model="loginForm.formData">
-      <div class="login-face"><img src="@/assets/img/logo.png" alt="logo"></div>
+  <div class="captcha-wrap">
+    <el-form ref="captchaForm"
+             class="captcha-form"
+             :rules="captchaForm.rules"
+             :model="captchaForm.formData">
+      <div class="captcha-face"><img src="@/assets/img/logo.png" alt="logo"></div>
       <el-form-item prop="username">
         <el-input type="text" maxlength="18"
-                  v-model="loginForm.formData.username"
-                  placeholder="账号" autocomplete="on"
+                  v-model="captchaForm.formData.username"
+                  :placeholder="property === 'email' ? '邮箱' : '手机号'" autocomplete="on"
                   @input.once="delete $route.params.msg">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input type="password"
-                  v-model="loginForm.formData.password"
-                  placeholder="密码"
-                  autocomplete="on"
-                  maxlength="18"
-                  @input.once="delete $route.params.msg">
-          <i class="el-icon-lock el-input__icon" slot="prefix"></i>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="captcha" style="margin-bottom: 5px;">
-        <el-input type="text" maxlength="4"
-                  v-model="loginForm.formData.captcha"
-                  placeholder="验证码" autocomplete="on"
-                  @keyup.enter.native="submitForm"
-                  @input.once="delete $route.params.msg">
-          <template slot="append">
-            <div class="img">
-              <canvas id="verifyCanvas" width="100" height="38" style="cursor: pointer;">不支持canvas</canvas>
-            </div>
-          </template>
+        <el-input type="text"
+                  maxlength="6"
+                  v-model="captchaForm.formData.password"
+                  placeholder="校验码" autocomplete="on">
+          <el-button slot="append"
+                     style="margin: 0;width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
+                     :disabled="timing > 0"
+                     :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
+                     @click="sendCaptcha">
+            {{ timing > 0 ? timing : "获取" }}
+          </el-button>
         </el-input>
       </el-form-item>
       <el-form-item style="margin-bottom: 0;">
-        <el-checkbox v-model="loginForm.formData.remember">14天免登录</el-checkbox>
+        <el-checkbox v-model="captchaForm.formData.remember">14天免登录</el-checkbox>
         <div style="float: right;height: 40px;">
-          <el-link :underline="false" index="/forget" @click="routerPush">忘记密码？</el-link>
+          <el-link :underline="false" @click="switchCaptchaType"
+                   v-text="property === 'mobile'? '切换为邮箱' : '切换为手机号'"></el-link>
+          &nbsp;
           <el-link :underline="false" index="/register" @click="routerPush">注册</el-link>
         </div>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" style="width: 100%;" @click.native.prevent="submitForm">登录
         </el-button>
-        <div class="el-form-item__error" style="width: 100%;text-align: right"
-             v-if="$route.params.msg || $route.query.msg">
-          <span>{{ $route.params.msg || $route.query.msg }}</span>
-        </div>
       </el-form-item>
       <el-form-item style="margin-top:-20px;">
         <el-link :underline="false" @click="moreLogin">
@@ -70,9 +59,6 @@
             <el-link :underline="false" href="/oauth2/authorization/github">
               <i class="el-icon-server-github-color el-input__icon iconfont" title="GitHub登录"></i>
             </el-link>
-            <!--            <el-link :underline="false" href="/oauth2/authorization/qq" target="_blank">-->
-            <!--              <img src="@/assets/img/qq.png" alt="QQ登录">-->
-            <!--            </el-link>-->
           </div>
         </el-collapse-transition>
       </el-form-item>
@@ -81,31 +67,49 @@
 </template>
 
 <script>
+import {genRandomString} from "@/util";
+
 export default {
-  name: "Login",
+  name: "Captcha",
   data: function () {
+    const validateUsername = (rule, value, callback) => {
+      const username = this.captchaForm.formData.username;
+      if (this.property.trim().length <= 0 ||
+          (this.property === "mobile" && !/^((\+86)|(86))?1\d{10}$/g.test(username))) {
+        callback(new Error('密码不一致'));
+        return;
+      }
+
+      if (this.property === "email" &&
+          !/^[\w.-]+@([\w-]+\.)+\w+$/g.test(username)) {
+        callback(new Error('密码不一致'));
+        return;
+      }
+
+      callback()
+    };
+
     return {
+      timing: 0,
       loading: false,
       moreLoginVisible: false,
-      loginForm: {
+      property: "email",
+      captchaForm: {
         formData: {
           username: "",
           password: "",
-          captcha: "",
           remember: false,
-          'auth-type': "PASSWORD"
+          'auth-type': "CAPTCHA"
         },
         rules: {
           username: [
-            {required: true, message: "请输入账号", trigger: "blur"}
+            {required: true, message: "请输入账号", trigger: "blur"},
+            {validator: validateUsername, trigger: "blur"}
           ],
           password: [
-            {required: true, message: "请输入密码", trigger: "blur"}
-          ],
-          captcha: [
-            {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: "长度应为四", trigger: "change"},
-          ],
+            {required: true, message: "请输入校验码", trigger: "blur"},
+            {min: 6, max: 6, message: "长度应为6", trigger: "change"}
+          ]
         }
       },
       redirect: undefined,
@@ -113,6 +117,9 @@ export default {
     }
   },
   methods: {
+    switchCaptchaType() {
+      this.property = (this.property === 'mobile') ? 'email' : 'mobile';
+    },
     routerPush({path}) {
       for (var p of path) {
         if (p.localName.trim() === "a") {
@@ -124,24 +131,52 @@ export default {
       }
     },
     submitForm() {
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.captchaForm.validate((valid) => {
         if (!valid) {
           return false;
         }
         this.loading = true;
-        this.$axios.post("/login", this.loginForm.formData).then(({data}) => {
+        this.$axios.post("/login", this.captchaForm.formData).then(({data}) => {
           if (data.code === 0) {
             this.$store.commit("setIsLogin", true);
             this.$store.commit("setUser", data.data);
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
           this.$error(err.toString());
           this.loading = false;
+        })
+      });
+    },
+    sendCaptcha() {
+      this.$refs.captchaForm.validateField("username", (valid) => {
+        if (valid) {
+          return false;
+        }
+
+        this.timing = 60;
+        this.startTimer();
+        this.$axios.get("/before/sendCaptcha", {
+          params: {
+            receiver: this.captchaForm.formData.username,
+            property: this.property
+          }
+        }).then(({data}) => {
+          if (data.code === 0) {
+            this.$success(data.msg);
+          } else {
+            this.$notify({
+              type: 'success',
+              title: '成功',
+              dangerouslyUseHTMLString: true,
+              message: "模拟请求<br>验证码发送成功<br>验证码：" + genRandomString(6)
+            });
+          }
+        }).catch((err) => {
+          this.$error(err.toString());
         })
       });
     },
@@ -157,6 +192,16 @@ export default {
           break
         }
       }
+    },
+    startTimer() {
+      this.timer = setInterval(() => {
+        if (this.timing <= 0) {
+          this.timing = 0;
+          clearInterval(this.timer);
+        } else {
+          this.timing--;
+        }
+      }, 1000);
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
@@ -180,15 +225,13 @@ export default {
     }
   },
   mounted() {
-    //数据渲染完以后加载验证码
-    this.flushCaptcha();
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.login-wrap {
+.captcha-wrap {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -o-box-sizing: border-box;
@@ -201,7 +244,7 @@ export default {
   background-size: 100%;
 }
 
-.login-wrap .login-form {
+.captcha-wrap .captcha-form {
   margin: 0 auto;
   width: 285px;
   padding: 30px 35px 15px 35px;
@@ -215,7 +258,7 @@ export default {
   border-radius: 10px;
 }
 
-.login-wrap .img {
+.captcha-wrap .img {
   position: relative;
   margin: 0;
   padding: 0;
@@ -224,7 +267,7 @@ export default {
   height: 38px;
 }
 
-.login-wrap .login-face {
+.captcha-wrap .captcha-face {
   margin: -95px auto 20px;
   width: 120px;
   height: 120px;
@@ -237,23 +280,28 @@ export default {
   background: white;
 }
 
-.login-wrap img {
+.captcha-wrap img {
   width: 100%
 }
 
-.login-wrap .el-input-group__append {
+.captcha-wrap .el-input-group__append {
   padding: 0 !important;
 }
 
-.login-wrap .el-input__icon {
+.captcha-wrap .el-input__icon {
   width: unset !important;
 }
 
-.login-wrap .iconfont {
+.captcha-wrap .iconfont {
   font-size: 40px !important;
   line-height: 40px !important;
   margin-left: 10px;
   margin-right: 10px;
 }
 
+.captcha-wrap .timing-active {
+  color: #FFF !important;
+  background-color: #409EFF !important;
+  border-color: #409EFF !important;
+}
 </style>

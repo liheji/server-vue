@@ -32,6 +32,22 @@
           绑定
         </el-link>
       </el-descriptions-item>
+      <el-descriptions-item v-for="auth in user.authAccounts" :key="auth.authCode" :label="auth.authType">
+        <el-avatar :size="20" :src="auth.avatarUrl"
+                   v-if="auth.openId !== undefined && auth.openId != null&& auth.openId.length > 0"
+                   style="margin-right: 5px">
+        </el-avatar>
+        {{ auth.name || "未绑定" }}
+        <el-link style="margin-left: 10px;"
+                 v-if="auth.openId !== undefined && auth.openId != null&& auth.openId.length > 0"
+                 type="primary"
+                 @click="unbindAuth(auth.id)">
+          解绑
+        </el-link>
+        <el-link style="margin-left: 10px;" v-else type="primary" :href="'/oauth2/authorization/'+ auth.authCode">
+          绑定
+        </el-link>
+      </el-descriptions-item>
       <el-descriptions-item label="最后登录时间">{{ user.lastLogin | formatDate }}</el-descriptions-item>
       <el-descriptions-item label="最后更新时间">{{ user.updateTime | formatDate }}</el-descriptions-item>
       <el-descriptions-item label="加入时间">{{ user.createTime | formatDate }}</el-descriptions-item>
@@ -50,7 +66,7 @@
                     placeholder="手机号"
                     :readonly="exitMobile"
                     autocomplete="on">
-            <i class="el-icon-server-mobile el-input__icon iconfont" slot="prefix"></i>
+            <i class="el-input__icon el-icon-mobile" slot="prefix"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="captcha">
@@ -90,7 +106,7 @@
                     placeholder="邮箱"
                     :readonly="exitEmail"
                     autocomplete="on">
-            <i class="el-icon-server-email el-input__icon iconfont" slot="prefix"></i>
+            <i class="el-icon-server-email-outline el-input__icon iconfont" slot="prefix"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="captcha">
@@ -301,6 +317,22 @@ export default {
     }
   },
   methods: {
+    unbindAuth(id) {
+      if (id != null) {
+        this.$axios.delete(`/authAccount`, {
+          data: {id: id}
+        }).then(({data}) => {
+          if (data.code === 0) {
+            this.$success(data.msg);
+            window.location.reload();
+          } else {
+            this.$warning(data.msg);
+          }
+        }).catch((err) => {
+          this.$error(err.toString());
+        })
+      }
+    },
     sendCaptcha(receiver, property) {
       this.timing = 60;
       this.startTimer();
@@ -471,10 +503,14 @@ export default {
 }
 
 .account-wrap .el-descriptions-item__container {
-  line-height: 28px !important;
+  line-height: 20px !important;
 }
 
 .account-wrap .el-input-group__append {
   padding: 0 !important;
+}
+
+.account-wrap .el-descriptions-item__container .el-descriptions-item__content, .el-descriptions-item__container .el-descriptions-item__label {
+  align-items: unset !important;
 }
 </style>

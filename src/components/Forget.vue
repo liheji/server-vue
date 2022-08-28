@@ -211,7 +211,7 @@ export default {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding-top: 15%;
+  padding-top: 10%;
   background-repeat: no-repeat;
   background-position: center right;
   background-size: 100%;
