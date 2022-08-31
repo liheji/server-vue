@@ -10,13 +10,22 @@ module.exports = {
             filename: "index.html",
         }
     },
+    // 生成环境不生成 Map文件，调试时请开起
+    productionSourceMap: false,
     configureWebpack: config => {
         if (process.env.NODE_ENV === "production") {
             config.externals = { // 不会被打包的库
+                // 第三方库
+                'qs': 'Qs',
+                'axios': 'axios',
+                'js-cookie': 'Cookies',
+                // 组件库
+                'vue-context-menu': 'VueContextMenu',
+                // 核心库
                 'vue': 'Vue',
                 'vue-router': 'VueRouter',
-                // 其他
-                'axios': 'axios'
+                // 依赖核心库的库
+                'vuex': 'Vuex'
             }
         }
     },

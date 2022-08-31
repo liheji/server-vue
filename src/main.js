@@ -19,9 +19,9 @@ import router from "./router";
 import store from './store'
 
 //第三方包
-import QS from "qs"
+import Qs from "qs"
 import axios from "axios"
-import cookie from "js-cookie"
+import Cookies from "js-cookie"
 
 //工具包（自定义）
 import {dateFormat, queryLocationSearch, calculateHash, base64Decode} from "@/util"
@@ -73,7 +73,7 @@ function initGlobal(that) {
     //安装全局事件，需要一个空的Vue组件传递消息而不要需要组件加载数据
     Vue.prototype.$bus = that;
 
-    Vue.prototype.$cookie = cookie;
+    Vue.prototype.$cookie = Cookies;
 
     //查询源URL是否包含 token
     store.commit("setPassToken", queryLocationSearch("token").trim())
@@ -181,8 +181,8 @@ function initAxios(that) {
         }
 
         if (secureMethod.has(config.method.toUpperCase())) {
-            config.data = QS.stringify(config.data || {}, {arrayFormat: 'repeat'})
-            config.headers['X-XSRF-TOKEN'] = cookie.get("XSRF-TOKEN") || "";
+            config.data = Qs.stringify(config.data || {}, {arrayFormat: 'repeat'})
+            config.headers['X-XSRF-TOKEN'] = Cookies.get("XSRF-TOKEN") || "";
             config.headers['Content-Type'] = "application/x-www-form-urlencoded"
         }
 

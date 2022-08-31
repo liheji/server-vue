@@ -64,13 +64,13 @@
             <el-link :underline="false" href="/oauth2/authorization/qq">
               <i class="el-icon-server-qq-color el-input__icon iconfont" title="QQ登录"></i>
             </el-link>
-            <el-link :underline="false" href="/oauth2/authorization/weibo">
-              <i class="el-icon-server-weibo-color el-input__icon iconfont" title="新浪微博登录"></i>
+            <el-link :underline="false" href="/oauth2/authorization/baidu">
+              <i class="el-icon-server-baidu-color el-input__icon iconfont" title="百度登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/github">
               <i class="el-icon-server-github-color el-input__icon iconfont" title="GitHub登录"></i>
             </el-link>
-            <!--            <el-link :underline="false" href="/oauth2/authorization/qq" target="_blank">-->
+            <!--            <el-link :underline="false" href="/oauth2/authorization/qq">-->
             <!--              <img src="@/assets/img/qq.png" alt="QQ登录">-->
             <!--            </el-link>-->
           </div>

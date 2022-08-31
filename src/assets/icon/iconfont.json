@@ -6,18 +6,46 @@
   "description": "创建server-icon",
   "glyphs": [
     {
+      "icon_id": "11983544",
+      "name": "google",
+      "font_class": "google-color",
+      "unicode": "ea0c",
+      "unicode_decimal": 59916
+    },
+    {
+      "icon_id": "14055598",
+      "name": "微博",
+      "font_class": "weibo-color",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "22724211",
+      "name": "icon-小米归属",
+      "font_class": "xiaomi-color",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "24164622",
+      "name": "华为1",
+      "font_class": "huawei-color",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "5098251",
+      "name": "icon_百度logo",
+      "font_class": "baidu-color",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
       "icon_id": "10818640",
       "name": "10验证码",
       "font_class": "captcha-color",
       "unicode": "e624",
       "unicode_decimal": 58916
-    },
-    {
-      "icon_id": "9186712",
-      "name": "微博",
-      "font_class": "weibo-color",
-      "unicode": "e668",
-      "unicode_decimal": 58984
     },
     {
       "icon_id": "7714975",
@@ -32,6 +60,13 @@
       "font_class": "qq-color",
       "unicode": "e667",
       "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "26267572",
+      "name": "gitee",
+      "font_class": "gitee-color",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
     },
     {
       "icon_id": "15933094",
