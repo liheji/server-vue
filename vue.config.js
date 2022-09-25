@@ -17,9 +17,12 @@ module.exports = {
             config.externals = { // 不会被打包的库
                 // 第三方库
                 'qs': 'Qs',
+                'xlsx': 'XLSX',
                 'axios': 'axios',
                 'js-cookie': 'Cookies',
+                'file-saver': 'saveAs',
                 // 组件库
+                'vue-print-nb': 'print',
                 'vue-context-menu': 'VueContextMenu',
                 // 核心库
                 'vue': 'Vue',

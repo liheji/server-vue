@@ -1,6 +1,6 @@
 <template>
   <div class="token-wrap" v-if="hasAuthority('view_pass_token')">
-    <el-search-table-pagination
+    <el-page-table
         stripe
         border
         type="remote"
@@ -13,7 +13,6 @@
         url="/passToken"
 
         :columns="tokenTable.columns"
-        :page-sizes="[10, 20, 50]"
         :form-options="tokenTable.options"
 
         @selection-change="handleSelectionChange">
@@ -92,7 +91,7 @@
         </el-tag>
         <el-tag v-else>还有{{ scope.row.expireTime | subToStr }}天过期</el-tag>
       </template>
-    </el-search-table-pagination>
+    </el-page-table>
 
     <el-dialog
         width="600px"
@@ -169,6 +168,7 @@ export default {
       },
       tokenTable: {
         options: {
+          toolbar: true,
           inline: true,
           size: "small",
           forms: [

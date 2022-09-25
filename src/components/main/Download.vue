@@ -1,6 +1,6 @@
 <template>
   <div class="file-wrap" v-if="hasAuthority('view_file_info')">
-    <el-search-table-pagination
+    <el-page-table
         stripe
         border
         type="remote"
@@ -12,7 +12,6 @@
         total-field="data.total"
         url="/fileInfo"
         :columns="fileForm.columns"
-        :page-sizes="[10, 20, 50]"
         :form-options="fileForm.options"
         @selection-change="handleSelectionChange">
 
@@ -66,7 +65,7 @@
             @click="handleFilePreviewThis(scope.$index, scope.row)">
         </el-button>
       </template>
-    </el-search-table-pagination>
+    </el-page-table>
   </div>
 </template>
 
@@ -79,6 +78,7 @@ export default {
     return {
       fileForm: {
         options: {
+          toolbar: true,
           inline: true,
           size: "small",
           forms: [
@@ -94,9 +94,7 @@ export default {
           },
           {
             prop: "createTime", label: "创建时间", showOverflowTooltip: true, minWidth: 250,
-            render: row => {
-              return dateFormat(row.fileInfo.createTime)
-            }
+            render: row => dateFormat(row.fileInfo.createTime)
           },
           {label: "操作", width: 180, slotName: "operate", fixed: "right"}
         ],

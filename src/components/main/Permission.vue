@@ -1,6 +1,6 @@
 <template>
   <div class="permission-wrap" v-if="hasAuthority('view_permission')">
-    <el-search-table-pagination
+    <el-page-table
         stripe
         border
         type="remote"
@@ -23,7 +23,7 @@
             @click="handlePermissionEdit(scope.$index, scope.row)">
         </el-button>
       </template>
-    </el-search-table-pagination>
+    </el-page-table>
 
     <el-dialog
         width="600px"
@@ -63,6 +63,7 @@ export default {
       },
       permissionTable: {
         options: {
+          toolbar: true,
           inline: true,
           size: "small",
           forms: [

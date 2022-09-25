@@ -1,7 +1,7 @@
 <template>
   <div class="account-wrap"
        v-if="hasAuthority('view_account')">
-    <el-search-table-pagination
+    <el-page-table
         stripe
         border
         type="remote"
@@ -13,7 +13,6 @@
         total-field="data.total"
         url="/account"
         :columns="accountTable.columns"
-        :page-sizes="[10, 20, 50]"
         :form-options="accountTable.options"
         @selection-change="handleSelectionChange">
       <template>
@@ -58,7 +57,7 @@
         <el-tag type="warning" effect="dark" v-else>普通用户</el-tag>
         <el-tag type="success" v-if="scope.row.id === $store.state.user.id" style="margin-left: 10px;">当前</el-tag>
       </template>
-    </el-search-table-pagination>
+    </el-page-table>
 
     <el-dialog
         top="8vh"
@@ -183,6 +182,7 @@ export default {
           ]
         },
         options: {
+          toolbar: true,
           inline: true,
           size: "small",
           forms: [

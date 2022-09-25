@@ -1,6 +1,6 @@
 <template>
   <div class="group-wrap" v-if="hasAuthority('view_group')">
-    <el-search-table-pagination
+    <el-page-table
         stripe
         border
         type="remote"
@@ -74,7 +74,7 @@
             @click="handleGroupEdit(scope.$index, scope.row)">
         </el-button>
       </template>
-    </el-search-table-pagination>
+    </el-page-table>
 
     <el-dialog
         width="600px"
@@ -146,6 +146,7 @@ export default {
       },
       groupTable: {
         options: {
+          toolbar: true,
           inline: true,
           size: "small",
           forms: [

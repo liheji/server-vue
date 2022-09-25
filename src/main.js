@@ -4,10 +4,13 @@ import App from "./App.vue"
 //ElementUI插件
 import ElementUI from "element-ui"
 import "element-ui/lib/theme-chalk/index.css"
+// 表格分页组件
+// 来自 https://github.com/zollero/el-search-table-pagination
+import ElPageTable from "@/components/table/ElPageTable"
 
 //其他插件
+import print from 'vue-print-nb'
 import VueContextMenu from "vue-context-menu"
-import ElSearchTablePagination from "el-search-table-pagination"
 
 //自定义图标
 import "@/assets/icon/iconfont.css"
@@ -35,10 +38,9 @@ VueRouter.prototype.push = function push(location) {
 //添加插件
 Vue.use(ElementUI);
 Vue.use(VueRouter);
+Vue.use(print)
 Vue.use(VueContextMenu);
-Vue.use(ElSearchTablePagination, {
-    axios
-});
+Vue.component("ElPageTable", ElPageTable);
 
 //实例化Vue
 new Vue({
@@ -71,6 +73,8 @@ new Vue({
 
 function initGlobal(that) {
     //安装全局事件，需要一个空的Vue组件传递消息而不要需要组件加载数据
+    Vue.prototype.$axios = axios;
+
     Vue.prototype.$bus = that;
 
     Vue.prototype.$cookie = Cookies;
@@ -192,7 +196,9 @@ function initAxios(that) {
     });
 
     //响应拦截器
-    that.$axios.interceptors.response.use(res => res, (err) => {
+    that.$axios.interceptors.response.use(res => {
+        return JSON.parse(JSON.stringify(res));
+    }, (err) => {
         //没有权限401，去登录界面
         const err_code = err.response.status;
         if (err_code === 401 && !that.$route.meta.withoutAuth) {
