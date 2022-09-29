@@ -14,6 +14,7 @@
 
         :columns="tokenTable.columns"
         :form-options="tokenTable.options"
+        :toolbar-options="tokenTable.toolbar"
 
         @selection-change="handleSelectionChange">
 
@@ -168,12 +169,15 @@ export default {
       },
       tokenTable: {
         options: {
-          toolbar: true,
           inline: true,
           size: "small",
           forms: [
             {prop: "tokenNote", label: "Token注释"},
           ]
+        },
+        toolbar: {
+          size: "mini",
+          all: true
         },
         columns: [
           {type: "selection"},

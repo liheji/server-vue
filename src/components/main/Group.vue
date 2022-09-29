@@ -14,6 +14,7 @@
         :columns="groupTable.columns"
         :page-sizes="[10, 20, 50]"
         :form-options="groupTable.options"
+        :toolbar-options="groupTable.toolbar"
         @selection-change="handleSelectionChange">
 
       <template>
@@ -146,12 +147,15 @@ export default {
       },
       groupTable: {
         options: {
-          toolbar: true,
           inline: true,
           size: "small",
           forms: [
             {prop: "param", label: "分组信息"}
           ]
+        },
+        toolbar: {
+          size: "mini",
+          all: true
         },
         columns: [
           {type: "selection"},

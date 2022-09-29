@@ -13,7 +13,8 @@
         url="/authPermission"
         :columns="permissionTable.columns"
         :page-sizes="[10, 20, 50]"
-        :form-options="permissionTable.options">
+        :form-options="permissionTable.options"
+        :toolbar-options="permissionTable.toolbar">
       <template slot-scope="scope" slot="operate">
         <el-button
             v-if="hasAuthority('change_permission')"
@@ -63,12 +64,15 @@ export default {
       },
       permissionTable: {
         options: {
-          toolbar: true,
           inline: true,
           size: "small",
           forms: [
             {prop: "param", label: "权限信息"}
           ]
+        },
+        toolbar: {
+          size: "mini",
+          all: true
         },
         columns: [
           {prop: "codename", label: "权限代码", sortable: true, minWidth: 100},

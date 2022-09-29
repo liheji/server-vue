@@ -11,8 +11,9 @@
         list-field="data.data"
         total-field="data.total"
         url="/fileInfo"
-        :columns="fileForm.columns"
-        :form-options="fileForm.options"
+        :columns="fileTable.columns"
+        :form-options="fileTable.options"
+        :toolbar-options="fileTable.toolbar"
         @selection-change="handleSelectionChange">
 
       <template>
@@ -25,14 +26,14 @@
               size="mini"
               type="danger"
               slot="reference"
-              :disabled="fileForm.selection.length <= 0">删除选中
+              :disabled="fileTable.selection.length <= 0">删除选中
           </el-button>
         </el-popconfirm>
         <el-button
             v-if="hasAuthority('download_file_info')"
             size="mini"
             type="primary"
-            :disabled="fileForm.selection.length <= 0"
+            :disabled="fileTable.selection.length <= 0"
             @click="handleFileDownloadSelect">下载选中
         </el-button>
       </template>
@@ -76,14 +77,17 @@ export default {
   name: "Download",
   data() {
     return {
-      fileForm: {
+      fileTable: {
         options: {
-          toolbar: true,
           inline: true,
           size: "small",
           forms: [
             {prop: "fileName", label: "文件名"},
           ]
+        },
+        toolbar: {
+          size: "mini",
+          all: true
         },
         columns: [
           {type: "selection"},
@@ -104,13 +108,13 @@ export default {
   },
   methods: {
     handleFileDeleteSelect() {
-      this.baseFileDelete(this.fileForm.selection);
+      this.baseFileDelete(this.fileTable.selection);
     },
     handleFileDelete(index, row) {
       this.baseFileDelete([row.id]);
     },
     handleFileDownloadSelect() {
-      this.fileForm.selection.forEach((val) => {
+      this.fileTable.selection.forEach((val) => {
         window.open(`/fileInfo/download/${val}`, '_blank');
       });
     },
@@ -122,7 +126,7 @@ export default {
     },
     handleSelectionChange(changeItems) {
       //获取用户的选中
-      this.fileForm.selection = changeItems.map(obj => {
+      this.fileTable.selection = changeItems.map(obj => {
         return obj.id;
       });
     },

@@ -20,8 +20,9 @@
 
     <slot/>
 
-    <el-button-group style="position: absolute;right: 30px;" v-if="formOptions.toolbar === true">
+    <div class="page-button-group" style="float: right; margin-bottom: 20px;" v-if="toolbarOptions !== undefined">
       <el-popover
+          v-if="toolbarOptions.cols === true || toolbarOptions.all === true "
           placement="bottom-end"
           @hide="handleColHide"
           trigger="click">
@@ -33,13 +34,13 @@
             {{ item.label }}
           </el-checkbox>
         </el-checkbox-group>
-        <el-button type="primary" :size="formOptions.size || 'mini'" plain icon="el-icon-menu" slot="reference"
-                   style="margin-right: -1px;border-radius: 3px 0 0 3px;border-left-color: #b3d8ff"></el-button>
+        <el-button type="primary" :size="toolbarOptions.size || 'mini'" plain icon="el-icon-menu"
+                   slot="reference"></el-button>
       </el-popover>
 
       <el-popover
+          v-if="toolbarOptions.export === true || toolbarOptions.all === true"
           placement="bottom-end"
-          v-model="exportVisible"
           trigger="click">
         <div style="text-align: left; margin-left: 10px;">
           <el-link :underline="false" @click="exportExcel('csv')">导出为 csv</el-link>
@@ -48,14 +49,15 @@
           <br>
           <el-link :underline="false" @click="exportExcel('xlsx')">导出为 xlsx</el-link>
         </div>
-        <el-button type="primary" :size="formOptions.size || 'mini'" plain icon="el-icon-folder-opened" slot="reference"
-                   style="border-radius: 0;"></el-button>
+        <el-button type="primary" :size="toolbarOptions.size || 'mini'" plain icon="el-icon-folder-opened"
+                   slot="reference"></el-button>
       </el-popover>
 
-      <el-button type="primary" :size="formOptions.size || 'mini'" plain icon="el-icon-printer"
-                 @click="dialogVisible=true"
-                 style="float: unset; margin-left: -1px;" v-print="printer"></el-button>
-    </el-button-group>
+      <span v-if="toolbarOptions.print === true || toolbarOptions.all === true">
+        <el-button type="primary" :size="toolbarOptions.size || 'mini'" plain icon="el-icon-printer"
+                   v-print="printer"></el-button>
+      </span>
+    </div>
 
     <el-table v-loading.lock="loading"
               id="el-page-table-print"
@@ -171,9 +173,10 @@
     <el-table
         border
         id="el-page-table-export"
+        ref="elPgeTableExport"
         v-show="false"
         :data="tableData"
-        v-if="formOptions.toolbar === true">
+        v-if="isExport">
 
       <template v-for="(column, columnIndex) in columns">
         <el-table-column
@@ -211,7 +214,7 @@
 <script>
 import Vue from 'vue'
 import searchForm from './ElSearchForm.vue'
-import { saveAs } from 'file-saver';
+import {saveAs} from 'file-saver';
 import * as XLSX from 'xlsx';
 
 export default {
@@ -289,6 +292,9 @@ export default {
     formOptions: {
       type: Object
     },
+    toolbarOptions: {
+      type: Object
+    },
     autoLoad: {
       type: Boolean,
       default: true
@@ -358,7 +364,7 @@ export default {
       cacheLocalData: [],
       colSelections: [],
       tableColumns: undefined,
-      exportVisible: false,
+      isExport: false,
       printer: {
         id: '#el-page-table-print',
         popTitle: document.title
@@ -550,28 +556,31 @@ export default {
       });
     },
     exportExcel(type) {
-      this.exportVisible = false;
-
-      type = type || "csv"
-      const wb = XLSX.utils.table_to_book(document.querySelector("#el-page-table-export"));
-      /* 获取二进制字符串作为输出 */
-      const wbOut = XLSX.write(wb, {
-        bookType: type,
-        bookSST: true,
-        type: "array",
-        align: 'center',
-        valign: 'vcenter',
-      });
-      try {
-        saveAs(
-            new Blob([wbOut], {type: "application/octet-stream"}),
-            `${document.title}.${type}`
-        );
-        // eslint-disable-next-line no-empty
-      } catch (ignored) {
-        console.error('Failed to Export: ', ignored)
-      }
-      return wbOut;
+      // 关闭弹窗
+      document.body.click();
+      this.isExport = true;
+      setTimeout(() => {
+        type = type || "csv"
+        const wb = XLSX.utils.table_to_book(document.querySelector("#el-page-table-export"));
+        /* 获取二进制字符串作为输出 */
+        const wbOut = XLSX.write(wb, {
+          bookType: type,
+          bookSST: true,
+          type: "array",
+          align: 'center',
+          valign: 'vcenter',
+        });
+        try {
+          saveAs(
+              new Blob([wbOut], {type: "application/octet-stream"}),
+              `${document.title}.${type}`
+          );
+          // eslint-disable-next-line no-empty
+        } catch (ignored) {
+          console.error('Failed to Export: ', ignored)
+        }
+        this.isExport = false;
+      }, 2000);
     }
   },
   mounted() {
@@ -609,3 +618,42 @@ export default {
   }
 }
 </script>
+<style scoped>
+.page-button-group {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.page-button-group::after, .page-button-group::before {
+  display: table;
+  content: ""
+}
+
+.page-button-group::after {
+  clear: both
+}
+
+.page-button-group .el-button {
+  float: left;
+  position: relative;
+
+}
+
+.page-button-group > :not(:first-child):not(:last-child) .el-button {
+  border-radius: 0;
+  border-left-color: hsla(0, 0%, 100%, .5);
+  border-right-color: hsla(0, 0%, 100%, .5);
+}
+
+.page-button-group > :first-child .el-button {
+  border-right-color: rgba(255, 255, 255, .5);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.page-button-group > :last-child .el-button {
+  border-left-color: rgba(255, 255, 255, .5);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>

@@ -14,6 +14,7 @@
         url="/account"
         :columns="accountTable.columns"
         :form-options="accountTable.options"
+        :toolbar-options="accountTable.toolbar"
         @selection-change="handleSelectionChange">
       <template>
         <el-popconfirm
@@ -182,7 +183,6 @@ export default {
           ]
         },
         options: {
-          toolbar: true,
           inline: true,
           size: "small",
           forms: [
@@ -196,6 +196,10 @@ export default {
               ]
             }
           ]
+        },
+        toolbar: {
+          size: "mini",
+          all: true
         },
         columns: [
           {type: "selection"},
