@@ -29,6 +29,11 @@ import Cookies from "js-cookie"
 //工具包（自定义）
 import {dateFormat, queryLocationSearch, calculateHash, base64Decode} from "@/util"
 
+// katex 样式
+// import 'katex/dist/katex.min.css'
+// Katex 自动渲染函数
+import renderMathInElement from 'katex/contrib/auto-render/auto-render'
+
 //解决当前位置的冗余导航
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
@@ -78,6 +83,16 @@ function initGlobal(that) {
     Vue.prototype.$bus = that;
 
     Vue.prototype.$cookie = Cookies;
+
+    Vue.prototype.$formula = function (element) {
+        renderMathInElement(element, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        })
+    }
 
     //查询源URL是否包含 token
     store.commit("setPassToken", queryLocationSearch("token").trim())

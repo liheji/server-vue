@@ -28,7 +28,9 @@ module.exports = {
                 'vue': 'Vue',
                 'vue-router': 'VueRouter',
                 // 依赖核心库的库
-                'vuex': 'Vuex'
+                'vuex': 'Vuex',
+                // Katex
+                "katex/contrib/auto-render/auto-render": "renderMathInElement",
             }
         }
     },

@@ -13,6 +13,7 @@ import Error500 from "@/components/Error500"
 import Main from "@/components/Main"
 import Token from "@/components/main/Token"
 import Group from "@/components/main/Group"
+import Latex from "@/components/main/Latex"
 import Upload from "@/components/main/Upload"
 import Format from "@/components/main/Format"
 import Device from "@/components/main/Device"
@@ -93,6 +94,13 @@ const router = new VueRouter({
                 component: Upload,
                 meta: {
                     title: "文件上传"
+                }
+            }, {
+                name: "latex",
+                path: "latex",
+                component: Latex,
+                meta: {
+                    title: "Latex公式"
                 }
             }, {
                 name: "token",

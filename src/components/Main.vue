@@ -71,6 +71,8 @@
           </el-menu-item>
           <el-menu-item v-if="hasAuthority('use_web_socket')" index="/main/server"><i class="el-icon-folder"></i>文件管理
           </el-menu-item>
+          <el-menu-item v-if="hasAuthority('use_latex_account')" index="/main/latex"><i class="el-icon-server-latex iconfont"></i>Latex公式
+          </el-menu-item>
           <el-menu-item index="/main/device"><i class="el-icon-mobile"></i>登录设备</el-menu-item>
         </el-submenu>
         <el-menu-item>

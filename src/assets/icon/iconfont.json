@@ -6,6 +6,13 @@
   "description": "创建server-icon",
   "glyphs": [
     {
+      "icon_id": "10352314",
+      "name": "公式",
+      "font_class": "latex",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
       "icon_id": "11983544",
       "name": "google",
       "font_class": "google-color",
