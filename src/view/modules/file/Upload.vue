@@ -1,8 +1,8 @@
 <template>
-  <div class="upload-wrap" v-if="hasAuthority('add_file_info')">
+  <div class="upload-wrap" v-if="hasAuthority('add_upload_info')">
     <el-upload
         ref="upload"
-        action="/fileInfo"
+        action="/uploadInfo"
         :data="uploadData"
         :headers="uploadHeaders"
         :before-upload="beforeUpload"
@@ -36,7 +36,7 @@ export default {
     },
     handleSuccess(resp, file) {
       //设置 UID对应的 href
-      document.getElementById(file.uid).href = `/fileInfo/download/${resp.data.id}`;
+      document.getElementById(file.uid).href = `/uploadInfo/download/${resp.data.id}`;
     },
     beforeRemove(file) {
       if (file) {

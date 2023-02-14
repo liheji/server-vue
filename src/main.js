@@ -1,5 +1,5 @@
 import Vue from "vue"
-import App from "./App.vue"
+import App from "@/view/App.vue"
 
 //ElementUI插件
 import ElementUI from "element-ui"
@@ -17,17 +17,17 @@ import "@/assets/icon/iconfont.css"
 
 //VueRouter插件
 import VueRouter from "vue-router";
-import router from "./router";
+import router from "@/router";
 // Vuex
-import store from './store'
+import store from '@/store'
 
 //第三方包
-import Qs from "qs"
+import Qs from "qs";
 import axios from "axios"
 import Cookies from "js-cookie"
 
 //工具包（自定义）
-import {dateFormat, queryLocationSearch, calculateHash, base64Decode} from "@/util"
+import {dateFormat, calculateHash, base64Decode} from "@/util"
 
 // katex 样式
 // import 'katex/dist/katex.min.css'
@@ -70,6 +70,8 @@ new Vue({
                     if (this.$route.meta.withoutAuth) {
                         this.$router.push({name: "personal"});
                     }
+                } else {
+                    this.$router.push({path: "/login"});
                 }
             }).catch((ignored) => {
         });
@@ -93,9 +95,6 @@ function initGlobal(that) {
             throwOnError: false
         })
     }
-
-    //查询源URL是否包含 token
-    store.commit("setPassToken", queryLocationSearch("token").trim())
 
     //全局过滤器
     Vue.filter('formatDate', function (strTime) {
@@ -128,22 +127,25 @@ function initGlobal(that) {
         });
     };
 
-    Vue.prototype.hasAuthority = (authority) => {
-        return that.$store.state.permissions.has(authority) || that.$store.state.user.isSuperuser;
+    Vue.prototype.hasAuthority = (...args) => {
+        if (that.$store.state.user.isSuperuser === true) {
+            return true
+        }
+        for (const arg of args) {
+            if (that.$store.state.permissions.has(arg)) {
+                return true
+            }
+        }
+        return false;
     };
 
     Vue.prototype.flushCaptcha = () => {
         that.$axios.get("/before/imageCaptcha")
             .then(({data}) => {
-                const img = new Image();
-                img.src = data.data;
-                img.onload = () => {
-                    const canvas = document.getElementById("verifyCanvas");
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, 100, 38);
-                    canvas.onclick = () => {
-                        that.flushCaptcha();
-                    }
+                const image = document.getElementById("verifyImg");
+                image.setAttribute("src", data.data);
+                image.onclick = () => {
+                    that.flushCaptcha();
                 }
             }).catch((ignored) => {
         });
@@ -155,7 +157,7 @@ function initGlobal(that) {
                 return upload.uploadFiles.filter(tmp => tmp.uid === file.uid).length > 0;
             }).then((hash) => {
                 that.$sync({
-                    url: '/fileInfo/verify',
+                    url: '/uploadInfo/verify',
                     method: 'post',
                     data: {
                         'fileSize': file.size,
@@ -163,7 +165,7 @@ function initGlobal(that) {
                         'fileName': file.name
                     }
                 }).then(({data}) => {
-                    if (data.code === 1) {
+                    if (data.code !== 0) {
                         upload.$refs['upload-inner'].headers['UPLOAD-TOKEN'] = data.key;
                         resolve()
                     } else {
@@ -189,22 +191,21 @@ function initAxios(that) {
     // window.vx = that;
     // that.$axios.defaults.baseURL = "http://localhost:8080";
     //*****************************测试开启*****************************
+    const formUrl = new Set(["/login"]);
     const secureMethod = new Set(["DELETE", "POST", "PUT"]);
-    //请求拦截器
+    //请求拦截器，设置 "DELETE", "POST", "PUT" 请求体为JSON格式数据
     that.$axios.interceptors.request.use((config) => {
-        //添加params的Query参数
-        if (that.$store.state.passToken) {
-            const ps = config.params || {};
-            ps.token = that.$store.state.passToken;
-            config.params = ps;
-        }
-
+        // 密码登录或验证码登录使用 表单提交
         if (secureMethod.has(config.method.toUpperCase())) {
-            config.data = Qs.stringify(config.data || {}, {arrayFormat: 'repeat'})
+            config.data = config.data || {}
             config.headers['X-XSRF-TOKEN'] = Cookies.get("XSRF-TOKEN") || "";
-            config.headers['Content-Type'] = "application/x-www-form-urlencoded"
+            if (formUrl.has(config.url)) {
+                config.data = Qs.stringify(config.data || {}, {arrayFormat: 'repeat'})
+                config.headers['Content-Type'] = "application/x-www-form-urlencoded"
+            } else {
+                config.headers['Content-Type'] = "application/json"
+            }
         }
-
         return config;
     }, (error) => {
         return Promise.reject(error);
@@ -236,7 +237,7 @@ function initRouter(that) {
         // next();
         //*****************************测试开启*****************************
 
-        //判断当前路由是否不需要进行权限控制
+        // 判断当前路由是否不需要进行权限控制
         if (to.meta.withoutAuth) {
             next();
         } else {

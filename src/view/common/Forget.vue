@@ -9,7 +9,8 @@
         <el-input type="text"
                   v-model="forgetForm.formData.username"
                   placeholder="邮箱或手机号"
-                  autocomplete="on">
+                  autocomplete="on"
+                  :validate-event="false">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
@@ -47,13 +48,12 @@
       </el-form-item>
       <el-form-item prop="captcha" class="captcha">
         <el-input type="text"
-                  maxlength="4"
                   v-model="forgetForm.formData.captcha"
                   placeholder="验证码" autocomplete="on"
                   @keyup.enter.native="submitForm">
           <template slot="append">
             <div class="img">
-              <canvas id="verifyCanvas" width="100" height="38" style="cursor: pointer;">不支持canvas</canvas>
+              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
             </div>
           </template>
         </el-input>
@@ -113,11 +113,11 @@ export default {
         rules: {
           username: [
             {required: true, message: "请输入邮箱或手机号", trigger: "blur"},
-            {validator: validateUname, trigger: "blur"}
+            {validator: validateUname}
           ],
           key: [
             {required: true, message: "请输入校验码", trigger: "blur"},
-            {min: 6, max: 6, message: "长度应为6", trigger: "blur"}
+            {min: 4, max: 4, message: "长度应为四", trigger: "blur"}
           ],
           password: [
             {required: true, message: "请输入密码", trigger: "blur"},
@@ -129,8 +129,7 @@ export default {
             {validator: validateRePwd, trigger: "blur"}
           ],
           captcha: [
-            {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: "长度应为四", trigger: "blur"}
+            {required: true, message: "请输入验证码", trigger: "blur"}
           ]
         }
       }

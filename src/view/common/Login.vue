@@ -9,7 +9,7 @@
         <el-input type="text" maxlength="18"
                   v-model="loginForm.formData.username"
                   placeholder="账号" autocomplete="on"
-                  @input.once="delete $route.params.msg">
+                  @input.once="clearErrorMsg">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
@@ -19,19 +19,19 @@
                   placeholder="密码"
                   autocomplete="on"
                   maxlength="18"
-                  @input.once="delete $route.params.msg">
+                  @input.once="clearErrorMsg">
           <i class="el-icon-lock el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha" style="margin-bottom: 5px;">
-        <el-input type="text" maxlength="4"
+        <el-input type="text"
                   v-model="loginForm.formData.captcha"
                   placeholder="验证码" autocomplete="on"
                   @keyup.enter.native="submitForm"
-                  @input.once="delete $route.params.msg">
+                  @input.once="clearErrorMsg">
           <template slot="append">
             <div class="img">
-              <canvas id="verifyCanvas" width="100" height="38" style="cursor: pointer;">不支持canvas</canvas>
+              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
             </div>
           </template>
         </el-input>
@@ -39,26 +39,26 @@
       <el-form-item style="margin-bottom: 0;">
         <el-checkbox v-model="loginForm.formData.remember">14天免登录</el-checkbox>
         <div style="float: right;height: 40px;">
-          <el-link :underline="false" index="/forget" @click="routerPush">忘记密码？</el-link>
-          <el-link :underline="false" index="/register" @click="routerPush">注册</el-link>
+          <el-link :underline="false" index="/forget" @click="routerPush($event)">忘记密码？</el-link>
+          <el-link :underline="false" index="/register" @click="routerPush($event)">注册</el-link>
         </div>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" style="width: 100%;" @click.native.prevent="submitForm">登录
         </el-button>
-        <div class="el-form-item__error" style="width: 100%;text-align: right"
+        <div class="el-form-item__error" style="margin-top: 12px;position: absolute;width: 100%;text-align: right;"
              v-if="$route.params.msg || $route.query.msg">
-          <span>{{ $route.params.msg || $route.query.msg }}</span>
+          <span>{{ errorMsg }}</span>
         </div>
       </el-form-item>
       <el-form-item style="margin-top:-20px;">
-        <el-link :underline="false" @click="moreLogin">
+        <el-link :underline="false" @click="moreLogin($event)">
           更多登录方式
           <i class="el-collapse-item__arrow el-icon-arrow-right"></i>
         </el-link>
         <el-collapse-transition>
           <div style="text-align: center;margin-top: 10px;" v-show="moreLoginVisible">
-            <el-link :underline="false" index="/captcha" @click="routerPush">
+            <el-link :underline="false" index="/captcha" @click="routerPush($event)">
               <i class="el-icon-server-captcha-color el-input__icon iconfont" title="验证码登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/qq">
@@ -81,6 +81,8 @@
 </template>
 
 <script>
+import {base64Decode} from "@/util";
+
 export default {
   name: "Login",
   data: function () {
@@ -103,25 +105,29 @@ export default {
             {required: true, message: "请输入密码", trigger: "blur"}
           ],
           captcha: [
-            {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: "长度应为四", trigger: "change"},
-          ],
+            {required: true, message: "请输入验证码", trigger: "blur"}
+          ]
         }
       },
       redirect: undefined,
       otherQuery: {}
     }
   },
-  methods: {
-    routerPush({path}) {
-      for (var p of path) {
-        if (p.localName.trim() === "a") {
-          this.$router.push({
-            path: p.attributes.index.value
-          });
-          break
-        }
+  computed: {
+    errorMsg() {
+      let str = this.$route.params.msg || this.$route.query.msg;
+      if (str && str.length > 13) {
+        str = str.substring(0, 10) + "...";
       }
+      return str;
+    }
+  },
+  methods: {
+    routerPush(event) {
+      const a = event.currentTarget
+      this.$router.push({
+        path: a.attributes.index.value
+      });
     },
     submitForm() {
       this.$refs.loginForm.validate((valid) => {
@@ -132,7 +138,7 @@ export default {
         this.$axios.post("/login", this.loginForm.formData).then(({data}) => {
           if (data.code === 0) {
             this.$store.commit("setIsLogin", true);
-            this.$store.commit("setUser", data.data);
+            this.$store.commit("setUser", base64Decode(data.data));
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
@@ -145,17 +151,13 @@ export default {
         })
       });
     },
-    moreLogin({path}) {
+    moreLogin(event) {
       this.moreLoginVisible = !this.moreLoginVisible;
-      for (var p of path) {
-        if (p.localName.trim() === "span") {
-          if (this.moreLoginVisible) {
-            p.firstElementChild.classList.add("is-active")
-          } else {
-            p.firstElementChild.classList.remove("is-active")
-          }
-          break
-        }
+      const i = event.currentTarget.getElementsByTagName("i")[0]
+      if (this.moreLoginVisible) {
+        i.classList.add("is-active")
+      } else {
+        i.classList.remove("is-active")
       }
     },
     getOtherQuery(query) {
@@ -165,6 +167,10 @@ export default {
         }
         return acc;
       }, {})
+    },
+    clearErrorMsg() {
+      this.$route.query.msg = undefined;
+      this.$route.params.msg = undefined;
     }
   },
   watch: {

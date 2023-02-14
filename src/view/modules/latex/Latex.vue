@@ -43,6 +43,10 @@
                 复制账户代码
               </el-button>
             </el-tooltip>
+            <el-button type="success" size="mini" style="margin-left: 10px"
+                       @click="openWindow('https://latexlive.com')">
+              官网直达
+            </el-button>
           </div>
           <el-input type="textarea" v-model="latexResult"
                     placeholder="请输入Latex公式" maxlength="16384" resize="none" rows="8">
@@ -116,8 +120,8 @@ export default {
       },
       latexResult: "",
       imagePreviewUrl: "",
-      LoginByAccountAction: "https://www.latexlive.com:5002/api/Client/LoginByAccount",
-      GetLatexAction: "https://www.latexlive.com:5002/api/Mathpix/GetLaTexFromMathPix",
+      LoginByAccountAction: "https://www.latexlive.cn:5002/api/Client/LoginByAccount",
+      GetLatexAction: "https://www.latexlive.cn:5002/api/Mathpix/GetLaTexFromMathPix",
     };
   },
   computed: {
@@ -293,13 +297,16 @@ export default {
         message: "复制成功",
         type: "success"
       });
+    },
+    openWindow(url) {
+      window.open(url, '_blank')
     }
   },
   mounted() {
     // 加载 MathJax
     if (window.MathJax === undefined) {
       var script = document.createElement('script');
-      script.src = 'https://cdn.lhjjjlxays.top/npm/mathjax@3/es5/tex-svg.js';
+      script.src = 'https://cdn.liheji.top/npm/mathjax@3/es5/tex-svg.js';
       script.async = true;
       document.head.appendChild(script);
     }

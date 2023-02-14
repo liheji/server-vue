@@ -90,13 +90,7 @@ const copyText = function (element) {
     document.execCommand("copy");
 }
 
-function queryLocationSearch(key) {
-    const reg = new RegExp(`(^|\\?|&)${key}=([^&]*)(\\s|&|$)`, "i");
-    if (reg.test(location.search)) return unescape(RegExp.$2.replace(/\+/g, " "));
-    return "";
-}
-
-function genRandomString(len) {
+function getRandomString(len) {
     const _charStr = 'abacdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789';
 
     var _str = '', length = _charStr.length - 1;
@@ -209,8 +203,7 @@ export {
     routeHandler,
     isMobile,
     copyText,
-    queryLocationSearch,
-    genRandomString,
+    getRandomString,
     camelName,
     calculateHash,
     base64Decode,

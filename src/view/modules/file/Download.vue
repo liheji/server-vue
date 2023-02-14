@@ -1,5 +1,5 @@
 <template>
-  <div class="file-wrap" v-if="hasAuthority('view_file_info')">
+  <div class="file-wrap" v-if="hasAuthority('view_upload_info')">
     <el-page-table
         stripe
         border
@@ -8,9 +8,9 @@
         ref="fileTable"
         page-index-key="page"
         page-size-key="limit"
-        list-field="data.data"
-        total-field="data.total"
-        url="/fileInfo"
+        list-field="data.page.list"
+        total-field="data.page.totalCount"
+        url="/uploadInfo"
         :columns="fileTable.columns"
         :form-options="fileTable.options"
         :toolbar-options="fileTable.toolbar"
@@ -18,7 +18,7 @@
 
       <template>
         <el-popconfirm
-            v-if="hasAuthority('delete_file_info')"
+            v-if="hasAuthority('delete_upload_info')"
             style="margin: 5px;"
             title="确认删除选中的文件吗？"
             @confirm="handleFileDeleteSelect">
@@ -30,7 +30,7 @@
           </el-button>
         </el-popconfirm>
         <el-button
-            v-if="hasAuthority('download_file_info')"
+            v-if="hasAuthority('download_upload_info')"
             size="mini"
             type="primary"
             :disabled="fileTable.selection.length <= 0"
@@ -44,7 +44,7 @@
             title="确认删除该文件吗？"
             @confirm="handleFileDelete(scope.$index, scope.row)">
           <el-button
-              v-if="hasAuthority('delete_file_info')"
+              v-if="hasAuthority('delete_upload_info')"
               size="mini"
               type="danger"
               icon="el-icon-delete"
@@ -52,14 +52,14 @@
           </el-button>
         </el-popconfirm>
         <el-button
-            v-if="hasAuthority('download_file_info')"
+            v-if="hasAuthority('download_upload_info')"
             size="mini"
             type="primary"
             icon="el-icon-download"
             @click="handleFileDownloadThis(scope.$index, scope.row)">
         </el-button>
         <el-button
-            v-if="hasAuthority('download_file_info')"
+            v-if="hasAuthority('download_upload_info')"
             size="mini"
             type="primary"
             icon="el-icon-view"
@@ -115,14 +115,14 @@ export default {
     },
     handleFileDownloadSelect() {
       this.fileTable.selection.forEach((val) => {
-        window.open(`/fileInfo/download/${val}`, '_blank');
+        window.open(`/uploadInfo/download/${val}`, '_blank');
       });
     },
     handleFileDownloadThis(index, row) {
-      window.open(`/fileInfo/download/${row.id}`, '_blank');
+      window.open(`/uploadInfo/download/${row.id}`, '_blank');
     },
     handleFilePreviewThis(index, row) {
-      window.open(`/fileInfo/preview/${row.id}`, '_blank');
+      window.open(`/uploadInfo/preview/${row.id}`, '_blank');
     },
     handleSelectionChange(changeItems) {
       //获取用户的选中
@@ -131,7 +131,7 @@ export default {
       });
     },
     baseFileDelete(fileIds) {
-      this.$axios.delete("/fileInfo", {
+      this.$axios.delete("/uploadInfo", {
         data: {fileIds: fileIds}
       }).then(({data}) => {
         if (data.code === 0) {

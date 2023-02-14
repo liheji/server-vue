@@ -81,7 +81,7 @@ export default {
     },
     deviceQuit(item) {
       this.current = item;
-      this.$axios.put("/device", {tp: item.type}).then(({data}) => {
+      this.$axios.put("/device", {type: item.type}).then(({data}) => {
         if (data.code === 0) {
           this.$success(data.msg);
           this.devices.forEach((it) => {

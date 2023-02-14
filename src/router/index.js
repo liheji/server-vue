@@ -1,28 +1,32 @@
 // 该文件专门用于创建整个应用的路由器
 import VueRouter from "vue-router"
 import {routeHandler} from "@/util"
-//引入组件
-import Login from "@/components/Login"
-import Captcha from "@/components/Captcha"
-import Forget from "@/components/Forget"
-import Register from "@/components/Register"
+// 引入主页框架组件
+import Main from "@/view/Main"
+//引入公共组件
+import Login from "@/view/common/Login"
+import Captcha from "@/view/common/Captcha"
+import Forget from "@/view/common/Forget"
+import Register from "@/view/common/Register"
+import Error404 from "@/view/common/Error404"
+import Error500 from "@/view/common/Error500"
 
-import Error404 from "@/components/Error404"
-import Error500 from "@/components/Error500"
+//引入系统组件
+import Personal from "@/view/modules/system/Personal"
+import Device from "@/view/modules/system/Device"
+import Group from "@/view/modules/system/Group"
+import Permission from "@/view/modules/system/Permission"
+import Account from "@/view/modules/system/Account"
 
-import Main from "@/components/Main"
-import Token from "@/components/main/Token"
-import Group from "@/components/main/Group"
-import Latex from "@/components/main/Latex"
-import Upload from "@/components/main/Upload"
-import Format from "@/components/main/Format"
-import Device from "@/components/main/Device"
-import Socket from "@/components/main/Socket"
-import Server from "@/components/main/Server"
-import Account from "@/components/main/Account"
-import Download from "@/components/main/Download"
-import Personal from "@/components/main/Personal"
-import Permission from "@/components/main/Permission"
+import Latex from "@/view/modules/latex/Latex"
+// wakeup
+import Hrbeu from "@/view/modules/wakeup/Hrbeu"
+// websocket
+import Socket from "@/view/modules/websocket/Socket"
+import Server from "@/view/modules/websocket/Server"
+// file
+import Upload from "@/view/modules/file/Upload"
+import Download from "@/view/modules/file/Download"
 
 //创建并暴露一个路由器
 const router = new VueRouter({
@@ -103,13 +107,6 @@ const router = new VueRouter({
                     title: "Latex公式"
                 }
             }, {
-                name: "token",
-                path: "token",
-                component: Token,
-                meta: {
-                    title: "Token管理"
-                }
-            }, {
                 name: "group",
                 path: "group",
                 component: Group,
@@ -124,11 +121,11 @@ const router = new VueRouter({
                     title: "权限管理"
                 }
             }, {
-                name: "format",
-                path: "format",
-                component: Format,
+                name: "hrbeu",
+                path: "hrbeu",
+                component: Hrbeu,
                 meta: {
-                    title: "课表格式化"
+                    title: "哈尔滨工程大学（研究生院）课程表格式化"
                 }
             }, {
                 name: "download",

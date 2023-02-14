@@ -131,7 +131,7 @@
             <el-form-item label="授权文件">
               <el-upload
                   ref="auth"
-                  action="/fileInfo"
+                  action="/uploadInfo"
                   with-credentials
                   :limit="1"
                   :multiple="false"

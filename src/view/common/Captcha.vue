@@ -6,10 +6,10 @@
              :model="captchaForm.formData">
       <div class="captcha-face"><img src="@/assets/img/logo.png" alt="logo"></div>
       <el-form-item prop="username">
-        <el-input type="text" maxlength="18"
+        <el-input type="text"
                   v-model="captchaForm.formData.username"
                   :placeholder="property === 'email' ? '邮箱' : '手机号'" autocomplete="on"
-                  @input.once="delete $route.params.msg">
+                  @input.once="clearErrorMsg">
           <i class="el-icon-user el-input__icon" slot="prefix"></i>
         </el-input>
       </el-form-item>
@@ -27,28 +27,45 @@
           </el-button>
         </el-input>
       </el-form-item>
+      <el-form-item prop="captcha" style="margin-bottom: 5px;">
+        <el-input type="text"
+                  v-model="captchaForm.formData.captcha"
+                  placeholder="验证码" autocomplete="on"
+                  @keyup.enter.native="submitForm"
+                  @input.once="clearErrorMsg">
+          <template slot="append">
+            <div class="img">
+              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
+            </div>
+          </template>
+        </el-input>
+      </el-form-item>
       <el-form-item style="margin-bottom: 0;">
         <el-checkbox v-model="captchaForm.formData.remember">14天免登录</el-checkbox>
         <div style="float: right;height: 40px;">
           <el-link :underline="false" @click="switchCaptchaType"
-                   v-text="property === 'mobile'? '切换为邮箱' : '切换为手机号'"></el-link>
+                   v-text="property === 'mobile'? '邮箱登录' : '手机号登录'"></el-link>
           &nbsp;
-          <el-link :underline="false" index="/register" @click="routerPush">注册</el-link>
+          <el-link :underline="false" index="/register" @click="routerPush($event)">注册</el-link>
         </div>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" style="width: 100%;" @click.native.prevent="submitForm">登录
         </el-button>
+        <div class="el-form-item__error" style="margin-top: 12px;position: absolute;width: 100%;text-align: right;"
+             v-if="$route.params.msg || $route.query.msg">
+          <span>{{ errorMsg }}</span>
+        </div>
       </el-form-item>
       <el-form-item style="margin-top:-20px;">
-        <el-link :underline="false" @click="moreLogin">
+        <el-link :underline="false" @click="moreLogin($event)">
           更多登录方式
           <i class="el-collapse-item__arrow el-icon-arrow-right"></i>
         </el-link>
         <el-collapse-transition>
           <div style="text-align: center;margin-top: 10px;" v-show="moreLoginVisible">
-            <el-link :underline="false" index="/captcha" @click="routerPush">
-              <i class="el-icon-server-captcha-color el-input__icon iconfont" title="验证码登录"></i>
+            <el-link :underline="false" index="/login" @click="routerPush($event)">
+              <i class="el-icon-server-passwd-color el-input__icon iconfont" title="密码登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/qq">
               <i class="el-icon-server-qq-color el-input__icon iconfont" title="QQ登录"></i>
@@ -67,22 +84,20 @@
 </template>
 
 <script>
-import {genRandomString} from "@/util";
+import {base64Decode} from "@/util";
 
 export default {
   name: "Captcha",
   data: function () {
     const validateUsername = (rule, value, callback) => {
       const username = this.captchaForm.formData.username;
-      if (this.property.trim().length <= 0 ||
-          (this.property === "mobile" && !/^((\+86)|(86))?1\d{10}$/g.test(username))) {
-        callback(new Error('密码不一致'));
+      if (this.property === "mobile" && !/^((\+86)|(86))?1\d{10}$/g.test(username)) {
+        callback(new Error('请输入正确的手机号'));
         return;
       }
 
-      if (this.property === "email" &&
-          !/^[\w.-]+@([\w-]+\.)+\w+$/g.test(username)) {
-        callback(new Error('密码不一致'));
+      if (this.property === "email" && !/^[\w.-]+@([\w-]+\.)+\w+$/g.test(username)) {
+        callback(new Error('请输入正确的邮箱'));
         return;
       }
 
@@ -99,16 +114,20 @@ export default {
           username: "",
           password: "",
           remember: false,
+          captcha: "",
           'auth-type': "CAPTCHA"
         },
         rules: {
           username: [
-            {required: true, message: "请输入账号", trigger: "blur"},
+            {required: true, message: "账号不能为空", trigger: "blur"},
             {validator: validateUsername, trigger: "blur"}
           ],
           password: [
             {required: true, message: "请输入校验码", trigger: "blur"},
-            {min: 6, max: 6, message: "长度应为6", trigger: "change"}
+            {min: 4, max: 4, message: "长度应为四", trigger: "change"}
+          ],
+          captcha: [
+            {required: true, message: "请输入验证码", trigger: "blur"}
           ]
         }
       },
@@ -116,19 +135,24 @@ export default {
       otherQuery: {}
     }
   },
+  computed: {
+    errorMsg() {
+      let str = this.$route.params.msg || this.$route.query.msg;
+      if (str && str.length > 13) {
+        str = str.substring(0, 10) + "...";
+      }
+      return str;
+    }
+  },
   methods: {
     switchCaptchaType() {
       this.property = (this.property === 'mobile') ? 'email' : 'mobile';
     },
-    routerPush({path}) {
-      for (var p of path) {
-        if (p.localName.trim() === "a") {
-          this.$router.push({
-            path: p.attributes.index.value
-          });
-          break
-        }
-      }
+    routerPush(event) {
+      const a = event.currentTarget
+      this.$router.push({
+        path: a.attributes.index.value
+      });
     },
     submitForm() {
       this.$refs.captchaForm.validate((valid) => {
@@ -139,10 +163,11 @@ export default {
         this.$axios.post("/login", this.captchaForm.formData).then(({data}) => {
           if (data.code === 0) {
             this.$store.commit("setIsLogin", true);
-            this.$store.commit("setUser", data.data);
+            this.$store.commit("setUser", base64Decode(data.data));
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
+            this.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
@@ -168,29 +193,20 @@ export default {
           if (data.code === 0) {
             this.$success(data.msg);
           } else {
-            this.$notify({
-              type: 'success',
-              title: '成功',
-              dangerouslyUseHTMLString: true,
-              message: "模拟请求<br>验证码发送成功<br>验证码：" + genRandomString(6)
-            });
+            this.$warning("暂不支持手机号登录");
           }
         }).catch((err) => {
           this.$error(err.toString());
         })
       });
     },
-    moreLogin({path}) {
+    moreLogin(event) {
       this.moreLoginVisible = !this.moreLoginVisible;
-      for (var p of path) {
-        if (p.localName.trim() === "span") {
-          if (this.moreLoginVisible) {
-            p.firstElementChild.classList.add("is-active")
-          } else {
-            p.firstElementChild.classList.remove("is-active")
-          }
-          break
-        }
+      const i = event.currentTarget.getElementsByTagName("i")[0]
+      if (this.moreLoginVisible) {
+        i.classList.add("is-active")
+      } else {
+        i.classList.remove("is-active")
       }
     },
     startTimer() {
@@ -210,6 +226,10 @@ export default {
         }
         return acc;
       }, {})
+    },
+    clearErrorMsg() {
+      this.$route.query.msg = undefined;
+      this.$route.params.msg = undefined;
     }
   },
   watch: {
@@ -225,6 +245,8 @@ export default {
     }
   },
   mounted() {
+    //数据渲染完以后加载验证码
+    this.flushCaptcha();
   }
 }
 </script>

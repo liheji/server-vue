@@ -8,27 +8,9 @@
                router>
         <el-menu-item>
           {{ user.username }}
-          <template v-if="isLogin">
-            <el-badge v-if="exitEmail" :is-dot="false">
-              <el-tag type="success">已登录</el-tag>
-            </el-badge>
-            <el-popover
-                v-else
-                placement="bottom"
-                title="警告"
-                width="180"
-                trigger="hover">
-              <div style="margin: 5px;">
-                请尽快绑定邮箱，邮箱主要用于<br>
-                1.登录系统<br>
-                2.忘记密码时身份认证
-              </div>
-              <el-badge is-dot slot="reference">
-                <el-tag type="success">已登录</el-tag>
-              </el-badge>
-            </el-popover>
-          </template>
-
+          <el-badge v-if="exitEmail" :is-dot="false">
+            <el-tag type="success">已登录</el-tag>
+          </el-badge>
           <el-popover
               v-else
               placement="bottom"
@@ -36,11 +18,12 @@
               width="180"
               trigger="hover">
             <div style="margin: 5px;">
-              某些功能异常<br>
-              且不会被修复
+              请尽快绑定邮箱，邮箱主要用于<br>
+              1.登录系统<br>
+              2.忘记密码时身份认证
             </div>
             <el-badge is-dot slot="reference">
-              <el-tag type="warning">Token</el-tag>
+              <el-tag type="success">已登录</el-tag>
             </el-badge>
           </el-popover>
         </el-menu-item>
@@ -59,28 +42,23 @@
             <i class="el-icon-lock"></i>
             权限管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('add_file_info')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
+          <el-menu-item v-if="hasAuthority('add_upload_info')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('view_file_info')" index="/main/download"><i class="el-icon-download"></i>下载管理
+          <el-menu-item v-if="hasAuthority('view_upload_info')" index="/main/download"><i class="el-icon-download"></i>下载管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('view_pass_token')" index="/main/token"><i class="el-icon-tickets"></i>Token管理
-          </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_format')" index="/main/format"><i class="el-icon-s-grid"></i>课表格式化
+          <el-menu-item v-if="hasAuthority('use_format')" index="/main/hrbeu"><i class="el-icon-s-grid"></i>课表格式化
           </el-menu-item>
           <el-menu-item v-if="hasAuthority('use_web_socket')" index="/main/socket"><i class="el-icon-coordinate"></i>Socket测试
           </el-menu-item>
           <el-menu-item v-if="hasAuthority('use_web_socket')" index="/main/server"><i class="el-icon-folder"></i>文件管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_latex_account')" index="/main/latex"><i class="el-icon-server-latex iconfont"></i>Latex公式
+          <el-menu-item v-if="hasAuthority('use_latex_account')" index="/main/latex"><i
+              class="el-icon-server-latex iconfont"></i>Latex公式
           </el-menu-item>
           <el-menu-item index="/main/device"><i class="el-icon-mobile"></i>登录设备</el-menu-item>
         </el-submenu>
         <el-menu-item>
-          <el-cascader v-model="location"
-                       placeholder="地区联级选择"
-                       clearable filterable
-                       :options="options">
-          </el-cascader>
+          <region-cascader :region.sync="location"></region-cascader>
         </el-menu-item>
         <el-menu-item v-if="hasAuthority('add_account')" @click="secretVisible=true">
           <el-link>生成授权码</el-link>
@@ -128,15 +106,18 @@
 </template>
 
 <script>
+import RegionCascader from '@/view/modules/common/RegionCascader'
 import {mapState} from 'vuex'
 import {copyText} from "@/util";
 
 export default {
   name: "Main",
+  components: {
+    RegionCascader
+  },
   data() {
     return {
-      location: [],
-      options: [],
+      location: '',
       secret: "尚未生成",
       secretLoading: false,
       secretVisible: false,
@@ -180,20 +161,19 @@ export default {
       copyText(target.parentNode.firstChild);
     }
   },
-  beforeCreate() {
-    //数据加载之前加载地区文件
-    this.$axios.get("/static/data/element.json").then(resp => {
-      this.options = resp.data;
-    }).catch((ignored) => {
-    });
-
-    this.$axios.get("/permissions")
-        .then(({data}) => {
-          if (data.code === 0) {
-            this.$store.commit("setPermissions", new Set(data.data))
-          }
-        }).catch((ignored) => {
-    });
+  mounted() {
+    if (this.user.isSuperuser) {
+      this.$store.commit("setPermissions", new Set())
+    } else {
+      this.$axios.get("/account/permissions/0", {
+        params: {isCode: true}
+      }).then(({data}) => {
+        if (data.code === 0) {
+          this.$store.commit("setPermissions", new Set(data.data))
+        }
+      }).catch((ignored) => {
+      });
+    }
   }
 }
 </script>

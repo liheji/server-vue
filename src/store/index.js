@@ -10,9 +10,6 @@ const actions = {}
 //准备mutations对象——修改state中的数据
 const mutations = {
     // 设置用户信息
-    setPassToken(state, passToken) {
-        state.passToken = passToken;
-    },
     setUser(state, user) {
         state.user = user;
     },
@@ -29,7 +26,6 @@ const mutations = {
 //准备state对象——保存具体的数据
 const state = {
     user: {},
-    passToken: '',
     permissions: new Set(),
     isLogin: false
 }
