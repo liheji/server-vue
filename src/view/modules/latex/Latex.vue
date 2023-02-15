@@ -1,5 +1,5 @@
 <template>
-  <div class="latex-wrap" v-if="hasAuthority('use_latex_account')">
+  <div class="latex-wrap" v-if="hasAuthority('use_latexaccount')">
     <el-row>
       <div class="el-upload__text" style="margin-top: 10px">将图片<em>拖拽</em>、<em>粘贴</em>到下方，或<em>点击下方</em>选择图片</div>
       <el-upload

@@ -242,7 +242,7 @@ function initRouter(that) {
             next();
         } else {
             //权限控制（通过session和token判断）
-            if (that.$store.state.isLogin || that.$store.state.passToken) {
+            if (that.$store.state.isLogin) {
                 next();
             } else {
                 //将跳转的路由path作为参数，登录成功后跳转到该路由

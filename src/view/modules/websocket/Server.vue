@@ -1,5 +1,5 @@
 <template>
-  <div class="server-warp" v-if="hasAuthority('use_web_socket')">
+  <div class="server-warp" v-if="hasAuthority('use_websocket')">
     <el-row id="serverRow" style="margin: 10px;">
       socket状态：
       <el-tag type="success" v-if="this.socket.readyState === 1">已连接</el-tag>
@@ -346,7 +346,7 @@ export default {
     },
     websocketConnect() {
       this.websocketBtnLoading = true;
-      this.$axios.get("/socketCaptcha").then(resp => {
+      this.$axios.get("/secretCaptcha?code=general_secret").then(resp => {
         setTimeout(() => {
           if (this.socket.readyState !== WebSocket.OPEN) {
             this.socket.close();

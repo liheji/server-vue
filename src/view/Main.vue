@@ -42,17 +42,17 @@
             <i class="el-icon-lock"></i>
             权限管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('add_upload_info')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
+          <el-menu-item v-if="hasAuthority('add_uploadinfo')" index="/main/upload"><i class="el-icon-upload2"></i>上传文件
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('view_upload_info')" index="/main/download"><i class="el-icon-download"></i>下载管理
+          <el-menu-item v-if="hasAuthority('view_uploadinfo')" index="/main/download"><i class="el-icon-download"></i>下载管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_format')" index="/main/hrbeu"><i class="el-icon-s-grid"></i>课表格式化
+          <el-menu-item v-if="hasAuthority('use_wakeup')" index="/main/hrbeu"><i class="el-icon-s-grid"></i>课表格式化
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_web_socket')" index="/main/socket"><i class="el-icon-coordinate"></i>Socket测试
+          <el-menu-item v-if="hasAuthority('use_websocket')" index="/main/socket"><i class="el-icon-coordinate"></i>Socket测试
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_web_socket')" index="/main/server"><i class="el-icon-folder"></i>文件管理
+          <el-menu-item v-if="hasAuthority('use_websocket')" index="/main/server"><i class="el-icon-folder"></i>文件管理
           </el-menu-item>
-          <el-menu-item v-if="hasAuthority('use_latex_account')" index="/main/latex"><i
+          <el-menu-item v-if="hasAuthority('use_latexaccount')" index="/main/latex"><i
               class="el-icon-server-latex iconfont"></i>Latex公式
           </el-menu-item>
           <el-menu-item index="/main/device"><i class="el-icon-mobile"></i>登录设备</el-menu-item>
@@ -132,7 +132,7 @@ export default {
   methods: {
     genRegisterCaptcha() {
       this.secretLoading = true;
-      this.$axios.get("/registerCaptcha").then(({data}) => {
+      this.$axios.get("/secretCaptcha?code=register_secret").then(({data}) => {
         if (data.code === 0) {
           this.secret = data.key;
         } else {

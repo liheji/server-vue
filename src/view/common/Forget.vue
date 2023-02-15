@@ -77,17 +77,17 @@ export default {
       }
 
       this.$sync({
-        url: "/before/uniqueCheck",
+        url: "/before/accountUnique",
         method: "get",
         params: {param: value}
       }).then(({data}) => {
-        if (data && data.result) {
+        if (data && data.code === 0) {
           callback();
         } else {
           callback(new Error('用户未绑定邮箱或手机号'));
         }
       }).catch((ignored) => {
-        callback(new Error('校验错误'));
+        callback(new Error('校验出错，请再次尝试'));
       });
     };
 

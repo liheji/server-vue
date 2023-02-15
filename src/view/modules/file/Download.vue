@@ -1,5 +1,5 @@
 <template>
-  <div class="file-wrap" v-if="hasAuthority('view_upload_info')">
+  <div class="file-wrap" v-if="hasAuthority('view_uploadinfo')">
     <el-page-table
         stripe
         border
@@ -18,7 +18,7 @@
 
       <template>
         <el-popconfirm
-            v-if="hasAuthority('delete_upload_info')"
+            v-if="hasAuthority('delete_uploadinfo')"
             style="margin: 5px;"
             title="确认删除选中的文件吗？"
             @confirm="handleFileDeleteSelect">
@@ -30,7 +30,7 @@
           </el-button>
         </el-popconfirm>
         <el-button
-            v-if="hasAuthority('download_upload_info')"
+            v-if="hasAuthority('download_uploadinfo')"
             size="mini"
             type="primary"
             :disabled="fileTable.selection.length <= 0"
@@ -44,7 +44,7 @@
             title="确认删除该文件吗？"
             @confirm="handleFileDelete(scope.$index, scope.row)">
           <el-button
-              v-if="hasAuthority('delete_upload_info')"
+              v-if="hasAuthority('delete_uploadinfo')"
               size="mini"
               type="danger"
               icon="el-icon-delete"
@@ -52,14 +52,14 @@
           </el-button>
         </el-popconfirm>
         <el-button
-            v-if="hasAuthority('download_upload_info')"
+            v-if="hasAuthority('download_uploadinfo')"
             size="mini"
             type="primary"
             icon="el-icon-download"
             @click="handleFileDownloadThis(scope.$index, scope.row)">
         </el-button>
         <el-button
-            v-if="hasAuthority('download_upload_info')"
+            v-if="hasAuthority('download_uploadinfo')"
             size="mini"
             type="primary"
             icon="el-icon-view"

@@ -178,11 +178,11 @@ const validateDict = {
             callback();
           } else {
             that.$sync({
-              url: "/before/uniqueCheck",
+              url: "/before/accountUnique",
               method: "get",
               params: {param: value}
             }).then(({data}) => {
-              if (data && data.result) {
+              if (data && data.code === 0) {
                 callback(new Error('邮箱已存在'));
               } else {
                 callback();
@@ -209,11 +209,11 @@ const validateDict = {
             }
 
             that.$sync({
-              url: "/before/uniqueCheck",
+              url: "/before/accountUnique",
               method: "get",
               params: {param: value}
             }).then(({data}) => {
-              if (data && data.result) {
+              if (data && data.code === 0) {
                 callback(new Error('手机号已存在'));
               } else {
                 callback();

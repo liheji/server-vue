@@ -1,9 +1,8 @@
 <template>
-  <div class="upload-wrap" v-if="hasAuthority('add_upload_info')">
+  <div class="upload-wrap" v-if="hasAuthority('add_uploadinfo')">
     <el-upload
         ref="upload"
         action="/uploadInfo"
-        :data="uploadData"
         :headers="uploadHeaders"
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
@@ -21,9 +20,6 @@ export default {
   name: "Upload",
   data() {
     return {
-      uploadData: {
-        token: this.$store.state.passToken
-      },
       uploadHeaders: {
         'X-XSRF-TOKEN': this.$cookie.get("XSRF-TOKEN") || "",
         'UPLOAD-TOKEN': ''
@@ -51,11 +47,6 @@ export default {
       } else {
         return false;
       }
-    }
-  },
-  mounted() {
-    if (!this.$store.state.passToken) {
-      delete this.uploadData.token;
     }
   }
 }

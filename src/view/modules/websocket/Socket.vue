@@ -1,5 +1,5 @@
 <template>
-  <div class="socket-wrap" v-if="hasAuthority('use_web_socket')">
+  <div class="socket-wrap" v-if="hasAuthority('use_websocket')">
     <el-container>
       <el-header height="100px">
         <el-form size="small">
@@ -68,7 +68,7 @@ export default {
       this.connectBtnLoading = true;
       this.pushMsg("正在连接服务器...")
 
-      this.$axios.get("/socketCaptcha").then(resp => {
+      this.$axios.get("/secretCaptcha?code=general_secret").then(resp => {
         setTimeout(() => {
           if (this.socket.readyState !== WebSocket.OPEN) {
             this.socket.close();

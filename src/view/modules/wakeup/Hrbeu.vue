@@ -1,11 +1,10 @@
 <template>
-  <div class="format-wrap" v-if="hasAuthority('use_format')">
+  <div class="format-wrap" v-if="hasAuthority('use_wakeup')">
     <el-upload
-        action="/format"
+        action="/wakeup"
         :on-success="handleFormatSuccess"
         :before-upload="beforeFormatUpload"
         :before-remove="beforeFormatRemove"
-        :data="formatData"
         :headers="formatHeaders"
         accept="text/html, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         with-credentials>
@@ -31,9 +30,6 @@ export default {
   data() {
     return {
       formatTips: "未选择文件",
-      formatData: {
-        token: this.$store.state.passToken
-      },
       formatHeaders: {
         'X-XSRF-TOKEN': this.$cookie.get("XSRF-TOKEN") || ""
       }
@@ -59,11 +55,6 @@ export default {
     },
     beforeFormatRemove(file) {
       return this.$confirm(`从列表中移除 ${file.name} 文件？`);
-    }
-  },
-  mounted() {
-    if (!this.$store.state.passToken) {
-      delete this.formatData.token;
     }
   }
 }
