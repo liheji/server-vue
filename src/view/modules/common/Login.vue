@@ -24,17 +24,11 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha" style="margin-bottom: 5px;">
-        <el-input type="text"
-                  v-model="loginForm.formData.captcha"
-                  placeholder="验证码" autocomplete="on"
-                  @keyup.enter.native="submitForm"
-                  @input.once="clearErrorMsg">
-          <template slot="append">
-            <div class="img">
-              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
-            </div>
-          </template>
-        </el-input>
+        <image-captcha v-model="loginForm.formData.captcha"
+                       ref="imageCaptcha"
+                       @submitForm="submitForm"
+                       @clearErrorMsg="clearErrorMsg">
+        </image-captcha>
       </el-form-item>
       <el-form-item style="margin-bottom: 0;">
         <el-checkbox v-model="loginForm.formData.remember">14天免登录</el-checkbox>
@@ -81,10 +75,14 @@
 </template>
 
 <script>
+import ImageCaptcha from '@/view/common/ImageCaptcha'
 import {base64Decode} from "@/util";
 
 export default {
   name: "Login",
+  components: {
+    ImageCaptcha
+  },
   data: function () {
     return {
       loading: false,
@@ -142,7 +140,7 @@ export default {
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha();
+            this.$refs.imageCaptcha.flushCaptcha();
           }
           this.loading = false;
         }).catch((err) => {
@@ -184,10 +182,6 @@ export default {
       },
       immediate: true
     }
-  },
-  mounted() {
-    //数据渲染完以后加载验证码
-    this.flushCaptcha();
   }
 }
 </script>
@@ -221,15 +215,6 @@ export default {
   border-radius: 10px;
 }
 
-.login-wrap .img {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  width: 100px;
-  height: 38px;
-}
-
 .login-wrap .login-face {
   margin: -95px auto 20px;
   width: 120px;
@@ -245,10 +230,6 @@ export default {
 
 .login-wrap img {
   width: 100%
-}
-
-.login-wrap .el-input-group__append {
-  padding: 0 !important;
 }
 
 .login-wrap .el-input__icon {

@@ -45,6 +45,9 @@ export default {
       this.$emit('input', val)
     },
     value(val) {
+      if (val === this.groupIds) {
+        return
+      }
       this.groupIds = val
     }
   },

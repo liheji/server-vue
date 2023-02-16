@@ -19,16 +19,10 @@
                     placeholder="再次输入新密码"></el-input>
         </el-form-item>
         <el-form-item prop="captcha" style="margin-bottom: 5px;">
-          <el-input type="text"
-                    v-model="dataForm.captcha"
-                    placeholder="验证码" autocomplete="off"
-                    @keyup.enter.native="dataFormSubmit">
-            <template slot="append">
-              <div class="img">
-                <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
-              </div>
-            </template>
-          </el-input>
+          <image-captcha v-model="dataForm.captcha"
+                         ref="imageCaptcha"
+                         @submitForm="dataFormSubmit">
+          </image-captcha>
         </el-form-item>
       </el-form>
 
@@ -43,7 +37,12 @@
 </template>
 
 <script>
+import ImageCaptcha from '@/view/common/ImageCaptcha'
+
 export default {
+  components: {
+    ImageCaptcha
+  },
   data() {
     const validateRePwd = (rule, value, callback) => {
       if (this.dataForm.newPassword !== this.dataForm.reNewPassword) {
@@ -85,7 +84,7 @@ export default {
       this.visible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
-        this.flushCaptcha();
+        this.$refs.imageCaptcha.flushCaptcha()
       })
     },
     // 表单提交
@@ -104,7 +103,7 @@ export default {
               })
             } else {
               this.$warning(data.msg);
-              this.flushCaptcha();
+              this.$refs.imageCaptcha.flushCaptcha()
             }
           }).catch((err) => {
             this.$error(err.toString());

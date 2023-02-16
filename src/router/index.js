@@ -4,12 +4,12 @@ import {routeHandler} from "@/util"
 // 引入主页框架组件
 import Main from "@/view/Main"
 //引入公共组件
-import Login from "@/view/common/Login"
-import Captcha from "@/view/common/Captcha"
-import Forget from "@/view/common/Forget"
-import Register from "@/view/common/Register"
-import Error404 from "@/view/common/Error404"
-import Error500 from "@/view/common/Error500"
+import Login from "@/view/modules/common/Login"
+import Captcha from "@/view/modules/common/Captcha"
+import Forget from "@/view/modules/common/Forget"
+import Register from "@/view/modules/common/Register"
+import Error404 from "@/view/modules/common/Error404"
+import Error500 from "@/view/modules/common/Error500"
 
 //引入系统组件
 import Personal from "@/view/modules/system/Personal"

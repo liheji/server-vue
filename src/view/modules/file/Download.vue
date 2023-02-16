@@ -132,7 +132,7 @@ export default {
     },
     baseFileDelete(fileIds) {
       this.$axios.delete("/uploadInfo", {
-        data: {fileIds: fileIds}
+        data: fileIds
       }).then(({data}) => {
         if (data.code === 0) {
           this.$success(`文件已删除，已删除 ${data.count} 共 ${data.total}`);

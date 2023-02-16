@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import {uploadCheck} from "@/util";
+
 export default {
   name: "Upload",
   data() {
@@ -28,7 +30,7 @@ export default {
   },
   methods: {
     beforeUpload(file) {
-      return this.uploadCheck(file, this.$refs.upload);
+      return uploadCheck(file, this.$refs.upload, this);
     },
     handleSuccess(resp, file) {
       //设置 UID对应的 href

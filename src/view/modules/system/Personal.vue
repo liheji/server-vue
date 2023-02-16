@@ -1,5 +1,5 @@
 <template>
-  <div class="account-wrap">
+  <div class="personal-wrap">
     <el-descriptions title="用户信息" :column="1">
       <el-descriptions-item label="用户名">{{ user.username }}</el-descriptions-item>
       <el-descriptions-item label="状态">
@@ -122,42 +122,19 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
-.account-wrap {
+.personal-wrap {
   margin: 20px;
 }
 
-.account-wrap .el-input-group__append .img {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  width: 100px;
-  height: 38px;
-}
-
-.account-wrap .timing-active {
-  color: #FFF !important;
-  background-color: #409EFF !important;
-  border-color: #409EFF !important;
-}
-
-.account-wrap .timing-disactive {
-  pointer-events: none !important;;
-}
-
-.account-wrap .mobile .el-form-item {
+.personal-wrap .mobile .el-form-item {
   margin-bottom: 0 !important;
 }
 
-.account-wrap .el-descriptions-item__container {
+.personal-wrap .el-descriptions-item__container {
   line-height: 20px !important;
 }
 
-.account-wrap .el-input-group__append {
-  padding: 0 !important;
-}
-
-.account-wrap .el-descriptions-item__container .el-descriptions-item__content,
+.personal-wrap .el-descriptions-item__container .el-descriptions-item__content,
 .el-descriptions-item__container .el-descriptions-item__label {
   align-items: unset !important;
 }

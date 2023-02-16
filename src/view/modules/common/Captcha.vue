@@ -14,31 +14,17 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input type="text"
-                  maxlength="6"
-                  v-model="captchaForm.formData.password"
-                  placeholder="校验码" autocomplete="on">
-          <el-button slot="append"
-                     style="margin: 0;width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
-                     :disabled="timing > 0"
-                     :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
-                     @click="sendCaptcha">
-            {{ timing > 0 ? timing : "获取" }}
-          </el-button>
-        </el-input>
+        <send-captcha v-model="captchaForm.formData.password"
+                      ref="sendCaptcha"
+                      @sendCaptcha="sendCaptcha">
+        </send-captcha>
       </el-form-item>
       <el-form-item prop="captcha" style="margin-bottom: 5px;">
-        <el-input type="text"
-                  v-model="captchaForm.formData.captcha"
-                  placeholder="验证码" autocomplete="on"
-                  @keyup.enter.native="submitForm"
-                  @input.once="clearErrorMsg">
-          <template slot="append">
-            <div class="img">
-              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
-            </div>
-          </template>
-        </el-input>
+        <image-captcha v-model="captchaForm.formData.captcha"
+                       ref="imageCaptcha"
+                       @submitForm="submitForm"
+                       @clearErrorMsg="clearErrorMsg">
+        </image-captcha>
       </el-form-item>
       <el-form-item style="margin-bottom: 0;">
         <el-checkbox v-model="captchaForm.formData.remember">14天免登录</el-checkbox>
@@ -84,10 +70,16 @@
 </template>
 
 <script>
+import SendCaptcha from '@/view/common/SendCaptcha'
+import ImageCaptcha from '@/view/common/ImageCaptcha'
 import {base64Decode} from "@/util";
 
 export default {
   name: "Captcha",
+  components: {
+    SendCaptcha,
+    ImageCaptcha
+  },
   data: function () {
     const validateUsername = (rule, value, callback) => {
       const username = this.captchaForm.formData.username;
@@ -105,7 +97,6 @@ export default {
     };
 
     return {
-      timing: 0,
       loading: false,
       moreLoginVisible: false,
       property: "email",
@@ -167,7 +158,8 @@ export default {
             this.$router.push({path: this.redirect || "/main/personal", query: this.otherQuery});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha();
+            this.$refs.imageCaptcha.flushCaptcha()
+            this.$refs.sendCaptcha.clear();
           }
           this.loading = false;
         }).catch((err) => {
@@ -181,9 +173,7 @@ export default {
         if (valid) {
           return false;
         }
-
-        this.timing = 60;
-        this.startTimer();
+        this.$refs.sendCaptcha.start();
         this.$axios.get("/before/sendCaptcha", {
           params: {
             receiver: this.captchaForm.formData.username,
@@ -209,16 +199,6 @@ export default {
         i.classList.remove("is-active")
       }
     },
-    startTimer() {
-      this.timer = setInterval(() => {
-        if (this.timing <= 0) {
-          this.timing = 0;
-          clearInterval(this.timer);
-        } else {
-          this.timing--;
-        }
-      }, 1000);
-    },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== "redirect") {
@@ -243,10 +223,6 @@ export default {
       },
       immediate: true
     }
-  },
-  mounted() {
-    //数据渲染完以后加载验证码
-    this.flushCaptcha();
   }
 }
 </script>
@@ -280,15 +256,6 @@ export default {
   border-radius: 10px;
 }
 
-.captcha-wrap .img {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  width: 100px;
-  height: 38px;
-}
-
 .captcha-wrap .captcha-face {
   margin: -95px auto 20px;
   width: 120px;
@@ -306,10 +273,6 @@ export default {
   width: 100%
 }
 
-.captcha-wrap .el-input-group__append {
-  padding: 0 !important;
-}
-
 .captcha-wrap .el-input__icon {
   width: unset !important;
 }
@@ -321,9 +284,4 @@ export default {
   margin-right: 10px;
 }
 
-.captcha-wrap .timing-active {
-  color: #FFF !important;
-  background-color: #409EFF !important;
-  border-color: #409EFF !important;
-}
 </style>

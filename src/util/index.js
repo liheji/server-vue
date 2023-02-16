@@ -90,20 +90,6 @@ const copyText = function (element) {
     document.execCommand("copy");
 }
 
-function getRandomString(len) {
-    const _charStr = 'abacdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789';
-
-    var _str = '', length = _charStr.length - 1;
-    if (len === undefined || len <= 0 || len > length) {
-        len = 6;
-    }
-    len = len || 15;
-    for (var i = 0; i < len; i++) {
-        _str += _charStr[Math.floor(Math.random() * length)];
-    }
-    return _str;
-}
-
 function camelName(name, trimFirst) {
     var i = 0;
     if (trimFirst) i++;
@@ -197,15 +183,47 @@ const base64Encode = (str) => {
     return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(str))
 }
 
+const uploadCheck = (file, upload, that) => {
+    return new Promise((resolve, reject) => {
+        calculateHash(file, ["md5", "sha256"], () => {
+            return upload.uploadFiles.filter(tmp => tmp.uid === file.uid).length > 0;
+        }).then((hash) => {
+            that.$sync({
+                url: '/uploadInfo/verify',
+                method: 'post',
+                data: {
+                    'fileSize': file.size,
+                    'fileHash': hash,
+                    'fileName': file.name
+                }
+            }).then(({data}) => {
+                if (data.code !== 0) {
+                    upload.$refs['upload-inner'].headers['UPLOAD-TOKEN'] = data.key;
+                    resolve()
+                } else {
+                    upload.handleSuccess(data, file);
+                    reject()
+                }
+            }).catch((err) => {
+                that.$warning(err.toString())
+                reject()
+            })
+        }).catch((err) => {
+            that.$warning(err.toString())
+            reject()
+        });
+    });
+}
+
 export {
     fileFormat,
     dateFormat,
     routeHandler,
     isMobile,
     copyText,
-    getRandomString,
     camelName,
     calculateHash,
     base64Decode,
-    base64Encode
+    base64Encode,
+    uploadCheck
 }

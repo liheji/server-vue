@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import PermissionTree from '@/view/modules/common/PermissionTree'
+import PermissionTree from '@/view/common/PermissionTree'
 
 export default {
   components: {

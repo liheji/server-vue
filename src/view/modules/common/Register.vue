@@ -43,17 +43,10 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha">
-        <el-input type="text"
-                  v-model="registerForm.formData.captcha"
-                  placeholder="验证码"
-                  autocomplete="on"
-                  @keyup.enter.native="submitForm">
-          <template slot="append">
-            <div class="img">
-              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
-            </div>
-          </template>
-        </el-input>
+        <image-captcha v-model="registerForm.formData.captcha"
+                       ref="imageCaptcha"
+                       @submitForm="submitForm">
+        </image-captcha>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" style="width: 100%;" @click.native.prevent="submitForm">注册
@@ -64,8 +57,13 @@
 </template>
 
 <script>
+import ImageCaptcha from '@/view/common/ImageCaptcha'
+
 export default {
   name: "Register",
+  components: {
+    ImageCaptcha
+  },
   data: function () {
     const validateUname = (rule, value, callback) => {
       if (!/^[a-zA-Z]\w+$/.test(value)) {
@@ -145,7 +143,7 @@ export default {
             this.$router.push({name: "login"});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha();
+            this.$refs.imageCaptcha.flushCaptcha()
           }
           this.loading = false;
         }).catch((err) => {
@@ -154,10 +152,6 @@ export default {
         })
       });
     }
-  },
-  mounted() {
-    //数据渲染完以后加载验证码
-    this.flushCaptcha();
   }
 }
 </script>
@@ -190,15 +184,6 @@ export default {
   border-radius: 10px;
 }
 
-.register-wrap .img {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  width: 100px;
-  height: 38px;
-}
-
 .register-wrap .register-face {
   margin: -95px auto 20px;
   width: 120px;
@@ -214,9 +199,5 @@ export default {
 
 .register-wrap img {
   width: 100%
-}
-
-.register-wrap .el-input-group__append {
-  padding: 0 !important;
 }
 </style>

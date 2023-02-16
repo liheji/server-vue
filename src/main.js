@@ -138,50 +138,6 @@ function initGlobal(that) {
         }
         return false;
     };
-
-    Vue.prototype.flushCaptcha = () => {
-        that.$axios.get("/before/imageCaptcha")
-            .then(({data}) => {
-                const image = document.getElementById("verifyImg");
-                image.setAttribute("src", data.data);
-                image.onclick = () => {
-                    that.flushCaptcha();
-                }
-            }).catch((ignored) => {
-        });
-    }
-
-    Vue.prototype.uploadCheck = (file, upload) => {
-        return new Promise((resolve, reject) => {
-            calculateHash(file, ["md5", "sha256"], () => {
-                return upload.uploadFiles.filter(tmp => tmp.uid === file.uid).length > 0;
-            }).then((hash) => {
-                that.$sync({
-                    url: '/uploadInfo/verify',
-                    method: 'post',
-                    data: {
-                        'fileSize': file.size,
-                        'fileHash': hash,
-                        'fileName': file.name
-                    }
-                }).then(({data}) => {
-                    if (data.code !== 0) {
-                        upload.$refs['upload-inner'].headers['UPLOAD-TOKEN'] = data.key;
-                        resolve()
-                    } else {
-                        upload.handleSuccess(data, file);
-                        reject()
-                    }
-                }).catch((err) => {
-                    that.$warning(err.toString())
-                    reject()
-                })
-            }).catch((err) => {
-                that.$warning(err.toString())
-                reject()
-            });
-        });
-    }
 }
 
 function initAxios(that) {

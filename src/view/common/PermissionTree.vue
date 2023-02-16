@@ -71,6 +71,9 @@ export default {
       this.$emit('input', val)
     },
     value(val) {
+      if (val === this.defaultChecked) {
+        return
+      }
       this.defaultChecked = val
     }
   },

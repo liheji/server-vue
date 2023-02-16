@@ -15,18 +15,10 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="key">
-        <el-input type="text"
-                  maxlength="6"
-                  v-model="forgetForm.formData.key"
-                  placeholder="校验码" autocomplete="on">
-          <el-button slot="append"
-                     style="width: 80px;border-radius: 0 4px 4px 0;padding: 13px 20px 12px 20px;"
-                     :disabled="timing > 0"
-                     :class="timing > 0 ? 'timing-disactive' : 'timing-active'"
-                     @click="sendCaptcha">
-            {{ timing > 0 ? timing : "获取" }}
-          </el-button>
-        </el-input>
+        <send-captcha v-model="forgetForm.formData.key"
+                      ref="sendCaptcha"
+                      @sendCaptcha="sendCaptcha">
+        </send-captcha>
       </el-form-item>
       <el-form-item prop="password">
         <el-input type="password"
@@ -47,16 +39,10 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="captcha" class="captcha">
-        <el-input type="text"
-                  v-model="forgetForm.formData.captcha"
-                  placeholder="验证码" autocomplete="on"
-                  @keyup.enter.native="submitForm">
-          <template slot="append">
-            <div class="img">
-              <img id="verifyImg" width="100" height="38" style="cursor: pointer;border: none;"/>
-            </div>
-          </template>
-        </el-input>
+        <image-captcha v-model="forgetForm.formData.captcha"
+                       ref="imageCaptcha"
+                       @submitForm="submitForm">
+        </image-captcha>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" style="width: 100%;" @click.native.prevent="submitForm">提交修改
@@ -66,8 +52,15 @@
   </div>
 </template>
 <script>
+import SendCaptcha from '@/view/common/SendCaptcha'
+import ImageCaptcha from '@/view/common/ImageCaptcha'
+
 export default {
   name: "Forget",
+  components: {
+    SendCaptcha,
+    ImageCaptcha
+  },
   data: function () {
     const validateUname = (rule, value, callback) => {
       if (!/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(value) &&
@@ -100,7 +93,6 @@ export default {
     };
 
     return {
-      timing: 0,
       loading: false,
       forgetForm: {
         formData: {
@@ -141,9 +133,8 @@ export default {
         if (valid) {
           return false;
         }
-        this.timing = 60;
-        this.startTimer();
 
+        this.$refs.sendCaptcha.start();
         this.$axios.get("/before/sendCaptcha", {
           params: {
             receiver: this.forgetForm.formData.username,
@@ -172,7 +163,8 @@ export default {
             this.$router.push({name: "login"});
           } else {
             this.$warning(data.msg);
-            this.flushCaptcha();
+            this.$refs.imageCaptcha.flushCaptcha()
+            this.$refs.sendCaptcha.clear();
           }
           this.loading = false;
         }).catch((err) => {
@@ -180,24 +172,7 @@ export default {
           this.loading = false;
         });
       });
-    },
-    startTimer() {
-      clearInterval(this.timer);
-      this.timer = setInterval(() => {
-        if (this.timing <= 0) {
-          this.timing = 0;
-          clearInterval(this.timer);
-        } else {
-          this.timing--;
-        }
-      }, 1000);
     }
-  },
-  mounted() {
-    this.flushCaptcha();
-  },
-  beforeDestroy() {
-    clearInterval(this.timer);
   }
 }
 </script>
@@ -230,15 +205,6 @@ export default {
   border-radius: 10px;
 }
 
-.forget-wrap .img {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  width: 100px;
-  height: 38px;
-}
-
 .forget-wrap .forget-face {
   margin: -95px auto 20px;
   width: 120px;
@@ -254,19 +220,5 @@ export default {
 
 .forget-wrap img {
   width: 100%
-}
-
-.forget-wrap .captcha .el-input-group__append {
-  padding: 0 !important;
-}
-
-.forget-wrap .timing-active {
-  color: #FFF !important;
-  background-color: #409EFF !important;
-  border-color: #409EFF !important;
-}
-
-.forget-wrap .timing-disactive {
-  pointer-events: none;
 }
 </style>

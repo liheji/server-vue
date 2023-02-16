@@ -154,7 +154,7 @@ export default {
     },
     handleAccountEdit(index, row) {
       if (!this.hasAuthority('change_account')) {
-        this.$warning("你无权操作修改用户信息");
+        this.$warning("你无权修改用户信息");
         return;
       }
       this.addOrUpdateVisible = true
@@ -169,9 +169,9 @@ export default {
       this.baseAccountEnable(this.accountTable.selection);
     },
     baseAccountEnable(accountIds) {
-      this.$axios.put("/account/status", {accountIds: accountIds}).then(({data}) => {
+      this.$axios.put("/account/status", accountIds).then(({data}) => {
         if (data.code === 0) {
-          this.$success(`账户状态已切换，成功 ${data.count} 共 ${data.total}`);
+          this.$success("账户状态切换完成");
           //执行表格重载
           this.$refs.accountTable.searchHandler(false);
         } else {

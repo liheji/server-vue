@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import GroupSelect from '@/view/modules/common/GroupSelect'
-import PermissionTree from '@/view/modules/common/PermissionTree'
+import GroupSelect from '@/view/common/GroupSelect'
+import PermissionTree from '@/view/common/PermissionTree'
 
 export default {
   components: {

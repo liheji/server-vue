@@ -147,17 +147,16 @@ export default {
       this.$refs.multipleDeletePopover.showPopper = false;
     },
     baseGroupDelete(groupIds) {
-      this.$axios.delete("/authGroup", {
-        data: {groupIds: groupIds}
-      }).then(({data}) => {
-        if (data.code === 0) {
-          this.$success(`分组已删除，已删除 ${data.count} 共 ${data.total}`);
-          //执行表格重载
-          this.$refs.groupTable.searchHandler(false);
-        } else {
-          this.$warning("分组删除失败");
-        }
-      }).catch((err) => {
+      this.$axios.delete("/authGroup", {data: groupIds})
+          .then(({data}) => {
+            if (data.code === 0) {
+              this.$success(`分组删除完成`);
+              //执行表格重载
+              this.$refs.groupTable.searchHandler(false);
+            } else {
+              this.$warning("分组删除失败");
+            }
+          }).catch((err) => {
         this.$error(err.toString());
       });
     },

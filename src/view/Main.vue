@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import RegionCascader from '@/view/modules/common/RegionCascader'
+import RegionCascader from '@/view/common/RegionCascader'
 import {mapState} from 'vuex'
 import {copyText} from "@/util";
 

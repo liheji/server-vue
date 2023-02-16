@@ -251,7 +251,7 @@ export default {
       if (this.loginByAccountForm.loginname !== "" && this.loginByAccountForm.password !== "") {
         this.$sync({
           url: "/latex",
-          method: "post",
+          method: "put",
           data: {"username": this.loginByAccountForm.loginname}
         }).then(_ => {
           this.loginByAccountForm.loginname = "";

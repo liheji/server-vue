@@ -175,7 +175,7 @@
  * p 管理文件
  * s 套接字文件
  */
-import {isMobile, copyText, fileFormat} from "@/util";
+import {isMobile, copyText, fileFormat, uploadCheck} from "@/util";
 
 const FILE_TYPE = {
   '-': "普通文件",
@@ -326,7 +326,7 @@ export default {
     },
     authFileBeforeUpload(file) {
       this.serverForm.fileMsg = '校验中...';
-      return this.uploadCheck(file, this.$refs.auth);
+      return uploadCheck(file, this.$refs.auth, this);
     },
     serverConnect() {
       if (this.socket.readyState === WebSocket.OPEN) {
