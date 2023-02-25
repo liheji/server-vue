@@ -1,4 +1,4 @@
-# vue-element
+# server-vue
 
 ## Project setup
 ```
