@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import ImageCaptcha from '@/view/common/ImageCaptcha'
+import ImageCaptcha from '@/views/common/ImageCaptcha'
 
 export default {
   components: {

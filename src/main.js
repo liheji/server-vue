@@ -1,5 +1,5 @@
 import Vue from "vue"
-import App from "@/view/App.vue"
+import App from "@/views/App.vue"
 
 //ElementUI插件
 import ElementUI from "element-ui"

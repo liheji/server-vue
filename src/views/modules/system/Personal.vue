@@ -60,8 +60,8 @@
 
 <script>
 import {mapState} from 'vuex'
-import PasswordUpdate from '@/view/modules/system/PersonalPasswordUpdate'
-import PropertyBinding from '@/view/modules/system/PersonalPropertyBinding'
+import PasswordUpdate from '@/views/modules/system/PersonalPasswordUpdate'
+import PropertyBinding from '@/views/modules/system/PersonalPropertyBinding'
 
 export default {
   name: "Personal",

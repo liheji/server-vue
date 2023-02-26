@@ -81,8 +81,7 @@
 </template>
 
 <script>
-import AddOrUpdate from '@/view/modules/system/GroupAddOrUpdate'
-import {camelName} from "@/util";
+import AddOrUpdate from '@/views/modules/system/GroupAddOrUpdate'
 
 export default {
   name: "Group",

@@ -2,31 +2,31 @@
 import VueRouter from "vue-router"
 import {routeHandler} from "@/util"
 // 引入主页框架组件
-import Main from "@/view/Main"
+import Main from "@/views/Main"
 //引入公共组件
-import Login from "@/view/modules/common/Login"
-import Captcha from "@/view/modules/common/Captcha"
-import Forget from "@/view/modules/common/Forget"
-import Register from "@/view/modules/common/Register"
-import Error404 from "@/view/modules/common/Error404"
-import Error500 from "@/view/modules/common/Error500"
+import Login from "@/views/modules/common/Login"
+import Captcha from "@/views/modules/common/Captcha"
+import Forget from "@/views/modules/common/Forget"
+import Register from "@/views/modules/common/Register"
+import Error404 from "@/views/modules/common/Error404"
+import Error500 from "@/views/modules/common/Error500"
 
 //引入系统组件
-import Personal from "@/view/modules/system/Personal"
-import Device from "@/view/modules/system/Device"
-import Group from "@/view/modules/system/Group"
-import Permission from "@/view/modules/system/Permission"
-import Account from "@/view/modules/system/Account"
+import Personal from "@/views/modules/system/Personal"
+import Device from "@/views/modules/system/Device"
+import Group from "@/views/modules/system/Group"
+import Permission from "@/views/modules/system/Permission"
+import Account from "@/views/modules/system/Account"
 
-import Latex from "@/view/modules/latex/Latex"
+import Latex from "@/views/modules/latex/Latex"
 // wakeup
-import Hrbeu from "@/view/modules/wakeup/Hrbeu"
+import Hrbeu from "@/views/modules/wakeup/Hrbeu"
 // websocket
-import Socket from "@/view/modules/websocket/Socket"
-import Server from "@/view/modules/websocket/Server"
+import Socket from "@/views/modules/websocket/Socket"
+import Server from "@/views/modules/websocket/Server"
 // file
-import Upload from "@/view/modules/file/Upload"
-import Download from "@/view/modules/file/Download"
+import Upload from "@/views/modules/file/Upload"
+import Download from "@/views/modules/file/Download"
 
 //创建并暴露一个路由器
 const router = new VueRouter({

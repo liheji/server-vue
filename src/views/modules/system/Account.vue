@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import AddOrUpdate from '@/view/modules/system/AccountAddOrUpdate'
+import AddOrUpdate from '@/views/modules/system/AccountAddOrUpdate'
 import {dateFormat} from "@/util"
 
 export default {

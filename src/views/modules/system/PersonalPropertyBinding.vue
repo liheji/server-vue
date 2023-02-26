@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import SendCaptcha from '@/view/common/SendCaptcha'
+import SendCaptcha from '@/views/common/SendCaptcha'
 
 export default {
   components: {

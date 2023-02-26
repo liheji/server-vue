@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import ImageCaptcha from '@/view/common/ImageCaptcha'
+import ImageCaptcha from '@/views/common/ImageCaptcha'
 import {base64Decode} from "@/util";
 
 export default {

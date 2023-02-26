@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import AddOrUpdate from '@/view/modules/system/PermissionAddOrUpdate'
+import AddOrUpdate from '@/views/modules/system/PermissionAddOrUpdate'
 
 export default {
   name: "Permission",
