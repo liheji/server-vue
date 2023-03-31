@@ -1,6 +1,5 @@
 // 该文件专门用于创建整个应用的路由器
 import VueRouter from "vue-router"
-import {routeHandler} from "@/util"
 // 引入主页框架组件
 import Main from "@/views/Main"
 //引入公共组件
@@ -27,6 +26,19 @@ import Server from "@/views/modules/websocket/Server"
 // file
 import Upload from "@/views/modules/file/Upload"
 import Download from "@/views/modules/file/Download"
+
+/**
+ * 路由拦截器，设置 title
+ * @param to 目标路由
+ * @param from 源路由
+ * @param next
+ */
+const routeHandler = function (to, from, next) {
+    if (to.meta.title) {
+        document.title = to.meta.title;
+    }
+    next();
+}
 
 //创建并暴露一个路由器
 const router = new VueRouter({

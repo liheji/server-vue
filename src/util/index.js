@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import {calculateHash} from "@/util/hash";
 
 const dateFormat = function (date, fmt) {
     date = new Date(date);
@@ -42,14 +42,6 @@ const fileFormat = function (num, precision) {
     }
     return num;
 };
-
-
-const routeHandler = function (to, from, next) {
-    if (to.meta.title) {
-        document.title = to.meta.title;
-    }
-    next();
-}
 
 const isMobile = function isMobile() {
     const userAgentInfo = navigator.userAgent;
@@ -101,93 +93,21 @@ function camelName(name, trimFirst) {
     return _str;
 }
 
-const calculateHash = (file, algorithm, callback) => {
-    return new Promise((resolve, reject) => {
-        if (typeof algorithm === "string") {
-            algorithm = [algorithm];
-        }
-
-        var cryptos = [];
-        for (var alg of algorithm) {
-            switch (alg.toLowerCase()) {
-                case "md5":
-                    cryptos.push(CryptoJS.algo.MD5.create());
-                    break;
-                case "sha1":
-                    cryptos.push(CryptoJS.algo.SHA1.create());
-                    break;
-                case "sha256":
-                    cryptos.push(CryptoJS.algo.SHA256.create());
-                    break;
-                case "sha512":
-                    cryptos.push(CryptoJS.algo.SHA512.create());
-                    break;
-                case "ripemd160":
-                    cryptos.push(CryptoJS.algo.RIPEMD160.create());
-                    break;
-                default:
-                    return reject(`不支持的算法 ${alg}`);
-            }
-        }
-
-        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
-            chunkSize = 2097152, // Read in chunks of 2MB
-            chunks = Math.ceil(file.size / chunkSize),
-            currentChunk = 0,
-            fileReader = new FileReader();
-
-        fileReader.onload = function (e) {
-            var res = CryptoJS.lib.WordArray.create(e.target.result);
-            for (var crypto of cryptos) {
-                crypto.update(res)
-            }
-            currentChunk++;
-
-            if (callback && typeof callback == 'function') {
-                if (callback() === false) {
-                    return reject("计算终止")
-                }
-            }
-
-            if (currentChunk < chunks) {
-                loadNext();
-            } else {
-                var ret = "";
-                for (var cry of cryptos) {
-                    ret += cry.finalize().toString();
-                }
-                return resolve(ret.toUpperCase());
-            }
-        };
-
-        fileReader.onerror = function (err) {
-            return reject(err.toString());
-        };
-
-        function loadNext() {
-            const start = currentChunk * chunkSize,
-                end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
-            fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
-        }
-
-        loadNext();
-    });
-}
-
-
-const base64Decode = (str) => {
-    return JSON.parse(CryptoJS.enc.Base64.parse(str).toString(CryptoJS.enc.Utf8))
-}
-
-const base64Encode = (str) => {
-    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(str))
-}
-
 const uploadCheck = (file, upload, that) => {
     return new Promise((resolve, reject) => {
-        calculateHash(file, ["md5", "sha256"], () => {
-            return upload.uploadFiles.filter(tmp => tmp.uid === file.uid).length > 0;
-        }).then((hash) => {
+        calculateHash(file,
+            ["md5", "sha256"],
+            (chunkSize, totalSize) => {
+                // 替换原文件
+                const fileList = upload.uploadFiles;
+                const getFiles = fileList.filter(tmp => tmp.uid === file.uid);
+                if (getFiles.length > 0) {
+                    file.checking = Number((chunkSize / totalSize * 100).toFixed(2))
+                    fileList.splice(fileList.indexOf(file), 1, file);
+                    return true;
+                }
+                return false;
+            }).then((hash) => {
             that.$sync({
                 url: '/uploadInfo/verify',
                 method: 'post',
@@ -209,7 +129,7 @@ const uploadCheck = (file, upload, that) => {
                 reject()
             })
         }).catch((err) => {
-            that.$warning(err.toString())
+            that.$warning("取消上传")
             reject()
         });
     });
@@ -218,12 +138,8 @@ const uploadCheck = (file, upload, that) => {
 export {
     fileFormat,
     dateFormat,
-    routeHandler,
     isMobile,
     copyText,
     camelName,
-    calculateHash,
-    base64Decode,
-    base64Encode,
     uploadCheck
 }

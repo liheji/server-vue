@@ -72,7 +72,7 @@
 <script>
 import SendCaptcha from '@/views/common/SendCaptcha'
 import ImageCaptcha from '@/views/common/ImageCaptcha'
-import {base64Decode} from "@/util";
+import {base64Decode} from "@/util/hash";
 
 export default {
   name: "Captcha",

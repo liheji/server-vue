@@ -7,6 +7,8 @@
         :before-upload="beforeUpload"
         :on-success="handleSuccess"
         :before-remove="beforeRemove"
+        :on-preview="onPreview"
+        :check-before="true"
         with-credentials
         multiple>
       <el-button size="medium" type="primary">点击上传</el-button>
@@ -33,21 +35,27 @@ export default {
       return uploadCheck(file, this.$refs.upload, this);
     },
     handleSuccess(resp, file) {
-      //设置 UID对应的 href
-      document.getElementById(file.uid).href = `/uploadInfo/download/${resp.data.id}`;
+      //设置文件对应的 href
+      file.href = `/uploadInfo/download/${resp.data.id}`;
     },
     beforeRemove(file) {
       if (file) {
-        if (file.status === 'success' && file.percentage === 0) {
+        if (file.status === 'success' && !file.percentage) {
           file.percentage = 100;
           return false;
         } else if (file.status !== 'success') {
+          // 秒传错误，立即删除
           return true;
         } else {
           return this.$confirm(`从列表中移除 ${file.name} 文件？`);
         }
       } else {
         return false;
+      }
+    },
+    onPreview(file) {
+      if (file.href) {
+        window.open(file.href)
       }
     }
   }

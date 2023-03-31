@@ -95,7 +95,7 @@
 import axios from "axios"
 
 
-import {copyText} from "@/util";
+import renderMathInElement from "katex/contrib/auto-render/auto-render";
 
 const axiosJson = axios.create({
   method: "post",
@@ -300,6 +300,15 @@ export default {
     },
     openWindow(url) {
       window.open(url, '_blank')
+    },
+    katexFormula(element) {
+      renderMathInElement(element, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      })
     }
   },
   mounted() {
@@ -330,7 +339,7 @@ export default {
   },
   updated() {
     // 重新渲染 Latex
-    this.$formula(document.getElementById("latex-view"))
+    this.katexFormula(document.getElementById("latex-view"))
   },
   beforeDestroy() {
     document.body.onpaste = null;
