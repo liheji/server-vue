@@ -15,7 +15,8 @@
         :columns="accountTable.columns"
         :form-options="accountTable.options"
         :toolbar-options="accountTable.toolbar"
-        @selection-change="handleSelectionChange">
+        @selection-change="handleSelectionChange"
+        selectable>
       <template>
         <el-popconfirm
             v-if="hasAuthority('delete_account')"
@@ -33,7 +34,7 @@
 
       <template slot-scope="scope" slot="operate">
         <el-button
-            v-if="hasAuthority('change_account')"
+            v-if="hasAuthority('change_account') && !isCurrent(scope.row.id)"
             style="margin: 5px;"
             size="mini"
             type="success"
@@ -43,7 +44,7 @@
       </template>
 
       <template slot-scope="scope" slot="isEnabled">
-        <el-switch v-if="hasAuthority('delete_account')" v-model="scope.row.isEnabled"
+        <el-switch v-if="hasAuthority('delete_account') && !isCurrent(scope.row.id)" v-model="scope.row.isEnabled"
                    active-text="正常"
                    inactive-text="锁定"
                    @change="handleAccountEnable(scope.$index, scope.row)">
@@ -67,6 +68,7 @@
 <script>
 import AddOrUpdate from '@/views/modules/system/AccountAddOrUpdate'
 import {dateFormat} from "@/util"
+import {mapState} from "vuex";
 
 export default {
   components: {
@@ -97,7 +99,11 @@ export default {
           all: true
         },
         columns: [
-          {type: "selection"},
+          {
+            type: "selection", selectable: row => {
+              return !(!!this.user.id && this.user.id === row.id);
+            }
+          },
           {prop: "username", label: "用户名", sortable: true, minWidth: 100},
           {prop: "isSuperuser", label: "身份", slotName: "isSuperuser", sortable: true, width: 150},
           {
@@ -138,7 +144,13 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState(["user"])
+  },
   methods: {
+    isCurrent(accountId) {
+      return !!this.user.id && this.user.id === accountId;
+    },
     getDataList() {
       this.$refs.accountTable.searchHandler(false);
     },

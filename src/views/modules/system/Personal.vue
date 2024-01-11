@@ -32,18 +32,19 @@
           绑定
         </el-link>
       </el-descriptions-item>
-      <el-descriptions-item v-for="auth in user.authAccounts" :key="auth.authCode" :label="auth.authType">
+      <el-descriptions-item v-for="auth in authAccounts" :key="auth.authCode" :label="authCodeToType(auth.authCode)">
         <el-avatar :size="20" :src="auth.avatarUrl"
-                   v-if="auth.openId !== undefined && auth.openId != null&& auth.openId.length > 0"
+                   v-if="auth.id !== undefined && auth.id != null && auth.id > 0"
                    style="margin-right: 5px">
         </el-avatar>
         {{ auth.name || "未绑定" }}
-        <el-link style="margin-left: 10px;"
-                 v-if="auth.openId !== undefined && auth.openId != null&& auth.openId.length > 0"
-                 type="primary"
-                 @click="unbindAuth(auth.id)">
-          解绑
-        </el-link>
+        <el-popconfirm
+            style="margin-left: 10px;"
+            v-if="auth.id !== undefined && auth.id != null && auth.id > 0"
+            title="确认解绑账号吗？"
+            @confirm="unbindAuth(auth.id)">
+          <el-link type="primary" slot="reference">解绑</el-link>
+        </el-popconfirm>
         <el-link style="margin-left: 10px;" v-else type="primary" :href="'/oauth2/authorization/'+ auth.authCode">
           绑定
         </el-link>
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      authAccounts: [],
       passwordUpdateVisible: false,
       propertyBindingVisible: false,
     };
@@ -100,6 +102,28 @@ export default {
         })
       })
     },
+    authCodeToType(authCode) {
+      switch (authCode) {
+        case "qq":
+          return "QQ";
+        case "baidu":
+          return "百度";
+        case "github":
+          return "GitHub";
+        case "weibo":
+          return "微博";
+        case "gitee":
+          return "Gitee";
+        case "google":
+          return "谷歌";
+        case "huawei":
+          return "华为";
+        case "xiaomi":
+          return "小米";
+        default:
+          return "Default";
+      }
+    },
     unbindAuth(id) {
       if (id != null) {
         this.$axios.delete(`/authAccount`, {
@@ -107,7 +131,16 @@ export default {
         }).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
-            window.location.reload();
+            const resultAuth = this.authAccounts;
+            this.authAccounts = resultAuth.map(obj => {
+              if (obj.id === id) {
+                obj.id = null;
+                obj.openId = null;
+                obj.name = null;
+                obj.avatarUrl = null;
+                obj.accountId = null;
+              }
+            })
           } else {
             this.$warning(data.msg);
           }
@@ -116,6 +149,18 @@ export default {
         })
       }
     }
+  },
+  mounted() {
+    this.$axios.get("/authAccount").then(({data}) => {
+      if (data.code === 0) {
+        this.authAccounts = data.data;
+        this.authAccounts.sort((a, b) => {
+          return a.authCode.length - b.authCode.length;
+        })
+        // 追加没有的
+      }
+    }).catch((ignored) => {
+    });
   }
 }
 </script>

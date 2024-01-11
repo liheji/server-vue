@@ -4,7 +4,7 @@
       <div class="el-upload__text" style="margin-top: 10px">将图片<em>拖拽</em>、<em>粘贴</em>到下方，或<em>点击下方</em>选择图片</div>
       <el-upload
           ref="latex"
-          :action="GetLatexAction"
+          :action="GetLaTexFromMathPixAction"
           :drag="true"
           :multiple="false"
           style="width: 100%"
@@ -120,8 +120,8 @@ export default {
       },
       latexResult: "",
       imagePreviewUrl: "",
-      LoginByAccountAction: "https://www.latexlive.cn:5002/api/Client/LoginByAccount",
-      GetLatexAction: "https://www.latexlive.cn:5002/api/Mathpix/GetLaTexFromMathPix",
+      LoginByAccountAction: "https://reverse.latexlive.com:5002/api/Client/LoginByAccount",
+      GetLaTexFromMathPixAction: "https://reverse.latexlive.com:5002/api/Mathpix/GetLaTexFromMathPix",
     };
   },
   computed: {

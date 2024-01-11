@@ -52,9 +52,6 @@
         <el-form-item label="分组" v-show="!dataForm.isSuperuser">
           <group-select v-model="dataForm.groupIds"></group-select>
         </el-form-item>
-        <el-form-item label="权限" v-show="!dataForm.isSuperuser">
-          <permission-tree v-model="dataForm.permissionIds"></permission-tree>
-        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="dataFormSubmit">立即提交</el-button>
           <el-button @click="$refs.dataForm.resetFields()">重置</el-button>
@@ -99,7 +96,6 @@ export default {
         isSuperuser: false,
         resetPassword: false,
         groupIds: [],
-        permissionIds: []
       },
       dataRule: {
         mobile: [
@@ -139,7 +135,6 @@ export default {
           // 清洗数据
           if (this.dataForm.isSuperuser) {
             this.dataForm.groupIds = [];
-            this.dataForm.permissionIds = [];
           }
           this.dataForm.id = this.dataForm.id || undefined;
 
@@ -172,15 +167,6 @@ export default {
           .then(({data}) => {
             if (data.code === 0) {
               this.dataForm.groupIds = data.data;
-            }
-          }).catch((ignored) => {
-      });
-    },
-    getPermissionIds(accountId) {
-      this.$axios.get(`/account/permissions/${accountId}`)
-          .then(({data}) => {
-            if (data.code === 0) {
-              this.dataForm.permissionIds = data.data;
             }
           }).catch((ignored) => {
       });

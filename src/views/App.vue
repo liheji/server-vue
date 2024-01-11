@@ -7,7 +7,7 @@
       <el-footer>
         <div>
           <p>
-            <span>Copyright 2021 © </span>
+            <span>{{ date }}&nbsp;©&nbsp;</span>
             <el-link href="https://liheji.top" target="_blank" rel="noopener noreferrer">憶夣</el-link>
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  style="vertical-align: middle;margin: 0 3px 0 3px">
@@ -29,7 +29,12 @@
 
 <script>
 export default {
-  name: "App"
+  name: "App",
+  data() {
+    return {
+      date: new Date().getFullYear()
+    }
+  }
 }
 </script>
 
