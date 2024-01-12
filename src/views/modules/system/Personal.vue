@@ -140,6 +140,7 @@ export default {
                 obj.avatarUrl = null;
                 obj.accountId = null;
               }
+              return obj;
             })
           } else {
             this.$warning(data.msg);

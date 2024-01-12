@@ -315,7 +315,7 @@ export default {
     // 加载 MathJax
     if (window.MathJax === undefined) {
       var script = document.createElement('script');
-      script.src = 'https://cdn.liheji.top/npm/mathjax@3/es5/tex-svg.js';
+      script.src = 'https://cdn.yilee.top/npm/mathjax@3/es5/tex-svg.js';
       script.async = true;
       document.head.appendChild(script);
     }
