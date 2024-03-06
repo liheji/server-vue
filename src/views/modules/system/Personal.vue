@@ -120,6 +120,8 @@ export default {
           return "华为";
         case "xiaomi":
           return "小米";
+        case "microsoft":
+          return "微软";
         default:
           return "Default";
       }
