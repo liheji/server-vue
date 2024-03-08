@@ -6,8 +6,190 @@
   "description": "创建server-icon",
   "glyphs": [
     {
+      "icon_id": "39485970",
+      "name": "品趣志",
+      "font_class": "pinterest-color",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "25383491",
+      "name": "Stack Overflow",
+      "font_class": "stack-overflow-color",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "4103020",
+      "name": "人人网",
+      "font_class": "renren-color",
+      "unicode": "e6e7",
+      "unicode_decimal": 59111
+    },
+    {
+      "icon_id": "11173497",
+      "name": "今日头条",
+      "font_class": "toutiao-color",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
+      "icon_id": "13245486",
+      "name": "企业微信",
+      "font_class": "wechat-enterprise-color",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "13860905",
+      "name": "企业微信网页版",
+      "font_class": "wechat-enterprise-web-color",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "15559686",
+      "name": "淘宝",
+      "font_class": "taobao-color",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "24648230",
+      "name": "开源中国",
+      "font_class": "oschina-color",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "27187528",
+      "name": "Teambition",
+      "font_class": "teambition-color",
+      "unicode": "e888",
+      "unicode_decimal": 59528
+    },
+    {
+      "icon_id": "35492054",
+      "name": "微信公众平台",
+      "font_class": "wechat-mp-color",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "37856342",
+      "name": "喜马拉雅",
+      "font_class": "xmly-color",
+      "unicode": "eb79",
+      "unicode_decimal": 60281
+    },
+    {
+      "icon_id": "39171605",
+      "name": "X",
+      "font_class": "twitter-color",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "12260650",
+      "name": "美团",
+      "font_class": "meituan-color",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "20965725",
+      "name": "领英",
+      "font_class": "linkedin-color",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "29428763",
+      "name": "京东",
+      "font_class": "jd-color",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "35145739",
+      "name": "酷家乐",
+      "font_class": "kujiale-color",
+      "unicode": "e649",
+      "unicode_decimal": 58953
+    },
+    {
+      "icon_id": "13303504",
+      "name": "GitLab",
+      "font_class": "gitlab-color",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "8547910",
+      "name": "钉钉",
+      "font_class": "dingtalk-color",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "22237928",
+      "name": "Coding",
+      "font_class": "coding-color",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "26007143",
+      "name": "抖音",
+      "font_class": "douyin-color",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "27550407",
+      "name": "CSDN",
+      "font_class": "csdn-color",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "29965993",
+      "name": "飞书",
+      "font_class": "feishu-color",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "35201882",
+      "name": "Facebook",
+      "font_class": "facebook-color",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "37870311",
+      "name": "饿了么",
+      "font_class": "eleme-color",
+      "unicode": "eb7d",
+      "unicode_decimal": 60285
+    },
+    {
+      "icon_id": "8875680",
+      "name": "支付宝",
+      "font_class": "alipay-color",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "28583816",
+      "name": "阿里云",
+      "font_class": "aliyun-color",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
       "icon_id": "26267564",
-      "name": "microsoft",
+      "name": "微软",
       "font_class": "microsoft-color",
       "unicode": "e60b",
       "unicode_decimal": 58891
@@ -28,49 +210,49 @@
     },
     {
       "icon_id": "11983544",
-      "name": "google",
+      "name": "Google",
       "font_class": "google-color",
       "unicode": "ea0c",
       "unicode_decimal": 59916
     },
     {
       "icon_id": "14055598",
-      "name": "微博",
+      "name": "新浪微博",
       "font_class": "weibo-color",
       "unicode": "e61f",
       "unicode_decimal": 58911
     },
     {
       "icon_id": "22724211",
-      "name": "icon-小米归属",
-      "font_class": "xiaomi-color",
+      "name": "小米",
+      "font_class": "mi-color",
       "unicode": "e613",
       "unicode_decimal": 58899
     },
     {
       "icon_id": "24164622",
-      "name": "华为1",
+      "name": "华为",
       "font_class": "huawei-color",
       "unicode": "e610",
       "unicode_decimal": 58896
     },
     {
       "icon_id": "5098251",
-      "name": "icon_百度logo",
+      "name": "百度",
       "font_class": "baidu-color",
       "unicode": "e65e",
       "unicode_decimal": 58974
     },
     {
       "icon_id": "10818640",
-      "name": "10验证码",
+      "name": "验证码",
       "font_class": "captcha-color",
       "unicode": "e624",
       "unicode_decimal": 58916
     },
     {
       "icon_id": "7714975",
-      "name": "github",
+      "name": "GitHub",
       "font_class": "github-color",
       "unicode": "e63a",
       "unicode_decimal": 58938
@@ -84,7 +266,7 @@
     },
     {
       "icon_id": "26267572",
-      "name": "gitee",
+      "name": "Gitee",
       "font_class": "gitee-color",
       "unicode": "e60c",
       "unicode_decimal": 58892
@@ -92,7 +274,7 @@
     {
       "icon_id": "15933094",
       "name": "微信",
-      "font_class": "weixin-color",
+      "font_class": "wechat-open-color",
       "unicode": "e607",
       "unicode_decimal": 58887
     },
@@ -105,7 +287,7 @@
     },
     {
       "icon_id": "1138436",
-      "name": "email",
+      "name": "Email",
       "font_class": "email-outline",
       "unicode": "e641",
       "unicode_decimal": 58945
@@ -126,7 +308,7 @@
     },
     {
       "icon_id": "372196",
-      "name": "cc-license",
+      "name": "License",
       "font_class": "license",
       "unicode": "e666",
       "unicode_decimal": 58982

@@ -32,7 +32,7 @@
           绑定
         </el-link>
       </el-descriptions-item>
-      <el-descriptions-item v-for="auth in authAccounts" :key="auth.authCode" :label="authCodeToType(auth.authCode)">
+      <el-descriptions-item v-for="auth in authAccounts" :key="auth.authCode" :label="auth.authName">
         <el-avatar :size="20" :src="auth.avatarUrl"
                    v-if="auth.id !== undefined && auth.id != null && auth.id > 0"
                    style="margin-right: 5px">
@@ -102,30 +102,6 @@ export default {
         })
       })
     },
-    authCodeToType(authCode) {
-      switch (authCode) {
-        case "qq":
-          return "QQ";
-        case "baidu":
-          return "百度";
-        case "github":
-          return "GitHub";
-        case "weibo":
-          return "微博";
-        case "gitee":
-          return "Gitee";
-        case "google":
-          return "谷歌";
-        case "huawei":
-          return "华为";
-        case "xiaomi":
-          return "小米";
-        case "microsoft":
-          return "微软";
-        default:
-          return "Default";
-      }
-    },
     unbindAuth(id) {
       if (id != null) {
         this.$axios.delete(`/authAccount`, {
@@ -133,17 +109,21 @@ export default {
         }).then(({data}) => {
           if (data.code === 0) {
             this.$success(data.msg);
-            const resultAuth = this.authAccounts;
-            this.authAccounts = resultAuth.map(obj => {
-              if (obj.id === id) {
-                obj.id = null;
-                obj.openId = null;
-                obj.name = null;
-                obj.avatarUrl = null;
-                obj.accountId = null;
-              }
-              return obj;
-            })
+            const index = this.authAccounts.findIndex((obj) => obj.id === id)
+            if (index >= 0 && index < this.authAccounts.length) {
+              const source = this.authAccounts[index];
+              this.authAccounts.splice(index, 1, {
+                id: null,
+                openId: null,
+                username: null,
+                name: null,
+                avatarUrl: null,
+                accountId: null,
+                authToken: null,
+                authCode: source.authCode,
+                authName: source.authName
+              });
+            }
           } else {
             this.$warning(data.msg);
           }
