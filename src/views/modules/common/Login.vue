@@ -56,13 +56,13 @@
               <i class="el-icon-server-captcha-color el-input__icon iconfont" title="验证码登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/qq">
-              <i class="el-icon-server-qq-color el-input__icon iconfont" title="QQ登录"></i>
+              <i class="el-icon-oauth-qq-color el-input__icon iconfont" title="QQ登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/gitee">
-              <i class="el-icon-server-gitee-color el-input__icon iconfont" title="Gitee登录"></i>
+              <i class="el-icon-oauth-gitee-color el-input__icon iconfont" title="Gitee登录"></i>
             </el-link>
             <el-link :underline="false" href="/oauth2/authorization/github">
-              <i class="el-icon-server-github-color el-input__icon iconfont" title="GitHub登录"></i>
+              <i class="el-icon-oauth-github-color el-input__icon iconfont" title="GitHub登录"></i>
             </el-link>
           </div>
         </el-collapse-transition>

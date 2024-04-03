@@ -1,9 +1,9 @@
 {
-  "id": "3168116",
-  "name": "server-icon",
+  "id": "4494333",
+  "name": "oauth-icon",
   "font_family": "iconfont",
-  "css_prefix_text": "el-icon-server-",
-  "description": "创建server-icon",
+  "css_prefix_text": "el-icon-oauth-",
+  "description": "第三方登录",
   "glyphs": [
     {
       "icon_id": "39485970",
@@ -195,20 +195,6 @@
       "unicode_decimal": 58891
     },
     {
-      "icon_id": "778509",
-      "name": "密码",
-      "font_class": "passwd-color",
-      "unicode": "e622",
-      "unicode_decimal": 58914
-    },
-    {
-      "icon_id": "10352314",
-      "name": "公式",
-      "font_class": "latex",
-      "unicode": "e616",
-      "unicode_decimal": 58902
-    },
-    {
       "icon_id": "11983544",
       "name": "Google",
       "font_class": "google-color",
@@ -244,13 +230,6 @@
       "unicode_decimal": 58974
     },
     {
-      "icon_id": "10818640",
-      "name": "验证码",
-      "font_class": "captcha-color",
-      "unicode": "e624",
-      "unicode_decimal": 58916
-    },
-    {
       "icon_id": "7714975",
       "name": "GitHub",
       "font_class": "github-color",
@@ -277,41 +256,6 @@
       "font_class": "wechat-open-color",
       "unicode": "e607",
       "unicode_decimal": 58887
-    },
-    {
-      "icon_id": "338695",
-      "name": "用户详情",
-      "font_class": "user-detail",
-      "unicode": "e62c",
-      "unicode_decimal": 58924
-    },
-    {
-      "icon_id": "1138436",
-      "name": "Email",
-      "font_class": "email-outline",
-      "unicode": "e641",
-      "unicode_decimal": 58945
-    },
-    {
-      "icon_id": "13872431",
-      "name": "用户管理",
-      "font_class": "user-manage",
-      "unicode": "e656",
-      "unicode_decimal": 58966
-    },
-    {
-      "icon_id": "11494965",
-      "name": "绑定邮箱",
-      "font_class": "email-bind",
-      "unicode": "e65c",
-      "unicode_decimal": 58972
-    },
-    {
-      "icon_id": "372196",
-      "name": "License",
-      "font_class": "license",
-      "unicode": "e666",
-      "unicode_decimal": 58982
     }
   ]
 }

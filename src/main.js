@@ -5,7 +5,8 @@ import App from "@/views/App.vue"
 import ElementUI from "element-ui"
 import "element-ui/lib/theme-chalk/index.css"
 //自定义图标
-import "@/assets/icon/iconfont.css"
+import "@/assets/fonts/server/iconfont.css"
+import "@/assets/fonts/oauth/iconfont.css"
 
 // 表格分页组件
 // 来自 https://github.com/zollero/el-search-table-pagination
