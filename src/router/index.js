@@ -51,7 +51,7 @@ const router = new VueRouter({
         component: Login,
         beforeEnter: routeHandler,
         meta: {
-            title: "系统登录",
+            title: "实用工具",
             withoutAuth: true
         }
     }, {
