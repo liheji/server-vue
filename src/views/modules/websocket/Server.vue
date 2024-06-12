@@ -27,7 +27,7 @@
              icon-leaf-class="el-icon-document"
              :props="treeProps"
              :load="treeLoadData"
-             @node-click="treeNodeClick">
+             @node-click="hdlClick">
             <span class="custom-tree-node"
                   slot-scope="{ node }"
                   @contextmenu.prevent="treeOpenContextMenu(node)">
@@ -88,6 +88,16 @@
         </el-descriptions-item>
         <el-descriptions-item label="权限">{{ currentNode.node.data.permit }}</el-descriptions-item>
       </el-descriptions>
+    </el-dialog>
+
+    <el-dialog
+        title="文件预览"
+        width="90%"
+        center
+        :visible.sync="nodeContentDialogVisible"
+        @close="onContentDialogClose">
+      <el-input type="textarea" rows="30" style="margin-top: -20px" :value="fileContent" readonly
+                resize="none"></el-input>
     </el-dialog>
 
     <el-dialog
@@ -176,6 +186,7 @@
  * s 套接字文件
  */
 import {isMobile, copyText, fileFormat, uploadCheck} from "@/util";
+import debounce from "lodash.debounce";
 
 const FILE_TYPE = {
   '-': "普通文件",
@@ -193,6 +204,7 @@ export default {
     return {
       isMobile: isMobile(),
       nodeInfoDialogVisible: false,
+      nodeContentDialogVisible: false,
       currentNode: {
         node: {data: {}},
         path: '',
@@ -235,7 +247,10 @@ export default {
       // 其他文件
       node: undefined,
       resolve: undefined,
-      displayHeight: 800
+      fileContent: '',
+      displayHeight: 800,
+      // 双击时间记录
+      clickCount: 0
     };
   },
   methods: {
@@ -287,6 +302,17 @@ export default {
       if (typeof node.isLeafByUser === 'boolean' && node.isLeaf && !node.isLeafByUser) {
         node.expanded = !node.expanded;
       }
+    },
+    treeNodeDbClick(data, node) {
+      if (typeof node.isLeafByUser === 'boolean' && node.isLeaf && node.isLeafByUser) {
+        this.socket.send(JSON.stringify({
+          path: this.baseNodePath(node),
+          action: 3
+        }));
+      }
+    },
+    onContentDialogClose() {
+      this.fileContent = ''
     },
     serverLogin() {
       this.$refs.serverForm.validate((valid) => {
@@ -395,6 +421,14 @@ export default {
                 this.$error(data.msg);
               }
               break;
+            case 3:
+              if (data.code === 0) {
+                this.fileContent = data.data;
+                this.nodeContentDialogVisible = true
+              } else {
+                this.$error(data.msg);
+              }
+              break;
             default:
               console.log(data);
               break;
@@ -405,6 +439,20 @@ export default {
         this.socket = {readyState: 0};
         this.$error('连接失败：' + err.toString());
       });
+    },
+    hdlClick() {
+      const args = arguments
+      // 发送单击事件
+      this.treeNodeClick(...args)
+      // 发送双击事件
+      this.clickCount++
+      const fnEmitDblClick = debounce(() => {
+        if (this.clickCount > 1) {
+          this.treeNodeDbClick(...args)
+        }
+        this.clickCount = 0
+      }, 500)
+      fnEmitDblClick()
     }
   },
   filters: {
