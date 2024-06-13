@@ -78,7 +78,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user"]),
+    ...mapState(["user", "isLogin"]),
     hasMobile() {
       return !!this.user.mobile;
     },
@@ -133,17 +133,25 @@ export default {
       }
     }
   },
-  mounted() {
-    this.$axios.get("/authAccount").then(({data}) => {
-      if (data.code === 0) {
-        this.authAccounts = data.data;
-        this.authAccounts.sort((a, b) => {
-          return a.authCode.length - b.authCode.length;
-        })
-        // 追加没有的
-      }
-    }).catch((ignored) => {
-    });
+  watch: {
+    'isLogin': {
+      handler(newVal, oldVal) {
+        if (!newVal) {
+          return
+        }
+        this.$axios.get("/authAccount").then(({data}) => {
+          if (data.code === 0) {
+            this.authAccounts = data.data;
+            this.authAccounts.sort((a, b) => {
+              return a.authCode.length - b.authCode.length;
+            })
+            // 追加没有的
+          }
+        }).catch((ignored) => {
+        });
+      },
+      immediate: true
+    }
   }
 }
 </script>

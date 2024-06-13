@@ -29,7 +29,8 @@
         </el-menu-item>
         <el-submenu index="2">
           <template slot="title">更多功能</template>
-          <el-menu-item index="/main/personal"><i class="el-icon-server-user-detail iconfont"></i>个人信息</el-menu-item>
+          <el-menu-item index="/main/personal"><i class="el-icon-server-user-detail iconfont"></i>个人信息
+          </el-menu-item>
           <el-menu-item v-if="hasAuthority('view_account')" index="/main/account">
             <i class="el-icon-server-user-manage iconfont"></i>
             用户管理
@@ -161,18 +162,26 @@ export default {
       copyText(target.parentNode.firstChild);
     }
   },
-  mounted() {
-    if (this.user.isSuperuser) {
-      this.$store.commit("setPermissions", new Set())
-    } else {
-      this.$axios.get("/account/permissions/0", {
-        params: {isCode: true}
-      }).then(({data}) => {
-        if (data.code === 0) {
-          this.$store.commit("setPermissions", new Set(data.data))
+  watch: {
+    'isLogin': {
+      handler(newVal, oldVal) {
+        if (!newVal) {
+          return
         }
-      }).catch((ignored) => {
-      });
+        if (this.user.isSuperuser) {
+          this.$store.commit("setPermissions", new Set())
+        } else {
+          this.$axios.get("/account/permissions/0", {
+            params: {isCode: true}
+          }).then(({data}) => {
+            if (data.code === 0) {
+              this.$store.commit("setPermissions", new Set(data.data))
+            }
+          }).catch((ignored) => {
+          });
+        }
+      },
+      immediate: true
     }
   }
 }
