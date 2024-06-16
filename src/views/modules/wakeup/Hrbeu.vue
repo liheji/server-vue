@@ -6,7 +6,7 @@
         :before-upload="beforeFormatUpload"
         :before-remove="beforeFormatRemove"
         :headers="formatHeaders"
-        accept="text/html, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        accept="text/html"
         with-credentials>
       <el-button slot="trigger" size="medium" type="primary" title="上传课程表excel或html文件">点击上传</el-button>
       <div style="display:inline;margin-left: 20px; padding:10px 0;">
