@@ -21,6 +21,11 @@
       </div>
       <div slot="tip" class="el-upload__tip" v-html="formatTips"></div>
     </el-upload>
+    <div style="margin-top: 20px">
+      <el-row v-for="item in formatFiles" :key="item.from.uid">
+        <el-link icon="el-icon-circle-check" :href="item.href" target="_blank" :type="item.href == null ? 'danger' : 'success'">{{ item.result }}</el-link>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -32,23 +37,27 @@ export default {
       formatTips: "未选择文件",
       formatHeaders: {
         'X-XSRF-TOKEN': this.$cookie.get("XSRF-TOKEN") || ""
-      }
+      },
+      formatFiles: []
     };
   },
   methods: {
     handleFormatSuccess(resp, file) {
       //设置 UID对应的 href
-      const a = document.createElement("a");
-      a.style.marginLeft = "20px";
       if (resp.code === 0) {
         this.formatTips = "格式化完成(<span style='color: red;'>10分钟后失效</span>)";
-        a.innerHTML = resp.fileName;
-        a.href = `/uploadInfo/download/${resp.fileName}`;
+        this.formatFiles.push({
+          from: file,
+          result: resp.fileName,
+          href: `/uploadInfo/download/${resp.fileName}`
+        })
       } else {
         this.formatTips = `<span style='color: red;'>${resp.msg}</span>`;
-        a.innerHTML = resp.msg;
+        this.formatFiles.push({
+          from: file,
+          result: resp.msg
+        })
       }
-      document.getElementById(file.uid).appendChild(a);
     },
     beforeFormatUpload() {
       this.formatTips = "格式化中...";
