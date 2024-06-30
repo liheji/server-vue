@@ -91,10 +91,10 @@
     </el-dialog>
 
     <el-dialog
-        title="文件预览"
+        :title="nodePreviewTitle"
         width="90%"
         center
-        :visible.sync="nodeContentDialogVisible"
+        :visible.sync="nodePreviewDialogVisible"
         @close="onContentDialogClose">
       <el-input type="textarea" rows="30" style="margin-top: -20px" :value="fileContent" readonly
                 resize="none"></el-input>
@@ -204,7 +204,8 @@ export default {
     return {
       isMobile: isMobile(),
       nodeInfoDialogVisible: false,
-      nodeContentDialogVisible: false,
+      nodePreviewTitle: "文件预览",
+      nodePreviewDialogVisible: false,
       currentNode: {
         node: {data: {}},
         path: '',
@@ -423,8 +424,9 @@ export default {
               break;
             case 3:
               if (data.code === 0) {
+                this.nodePreviewTitle = data.path
                 this.fileContent = data.data;
-                this.nodeContentDialogVisible = true
+                this.nodePreviewDialogVisible = true
               } else {
                 this.$error(data.msg);
               }
